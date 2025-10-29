@@ -1,0 +1,85 @@
+\newpage
+\section{従来研究\cite{ogata}}
+\subsection{想定する車両}
+4輪自動車の低速運動時には横滑り角の変化が殆ど無いものとして捉えることができ，この自動車の運動を記述する方法としてアッカーマンステアリングジオメトリがよく知られている\cite{Ackerman}．従来研究\cite{ogata}ではアッカーマンステアリングジオメトリにより4輪自動車の後輪軸を中心とした軌道を経路としている．これによって，回転中心と後輪軸の中心を結んだ直線が4輪自動車の中心軸と常に直交することで円弧と直線による経路生成ができる．また，トヨタ自動車　ヤリス\cite{model_car}を車両モデルとして車両パラメータを設定した．
+\subsection{経路計画の手法}
+従来研究\cite{ogata}では切り返しが必要な狭い環境を想定している．図\ref{fig:step1}の赤い四角の駐車開始位置から青い四角の駐車目標位置までの経路を生成する．ここでは駐車目標位置から駐車開始位置へと経路計画を行い，生成した経路を逆向きに辿ることで駐車開始位置から駐車目標位置までの経路生成を行っている．従来手法\cite{ogata}の経路計画は次のような手順で行われる．
+\subsubsection*{STEP 1}
+図\ref{fig:step1}の赤色の円$C_1$は最小回転半径の円，オレンジ色の円$C_{1s}$は障害物との安全距離を考慮して，車体右側面と障害物との距離が$\delta_1$以上になるように半径を設定した円である．車両目標位置の後輪軸の中心と前輪軸の中心を通る直線と円$C_1$が接する，かつ円$C_{1s}$上に障害物の角がくるように円$C_1$の中心を設定する．すなわち次式を満たすように円$C_1$の中心を設定する．
+\begin{equation}
+  \left( obs_x - C_{1_x} \right) ^2 + \left( obs_x - C_{1_y} \right) ^2 > \{ R - (C_{W}/2) - \delta_{1}\}^2
+\end{equation}  
+ここで$obs_x，obs_y$は障害物の角の座標，$C_{1_x}，C_{1_y}$は円$C_1$の中心座標，$R$は最小回転半径，$C_W$は車幅である．この(1)式の条件を満たすように$C_{1_x}，C_{1_y}$を決定することにより，障害物から安全な距離離れた経路を生成できる．
+
+\subsubsection*{STEP 2}
+図\ref{fig:step2}のように車両左前と障害物の距離が$\delta_2$になるまで車両の中心軸と円$C_1$が接し，円$C_1$上を車両の後輪軸の中心が通るように前進させる．
+
+\subsubsection*{STEP 3}
+図\ref{fig:step3}のように後輪軸に接するように最小回転半径の緑色の円$C_2$を設定し，車両左後と障害物の距離が$\delta_3$になるまで後退させる．
+
+\subsubsection*{STEP 4 (STEP4-1 / STEP4-2)}
+図\ref{fig:step4-1}のように青色の円$C_3$を設定し，STEP2と同様に車両を前進させる(STEP4-1) ． その時，前進する際に障害物と車両左前の距離が$\delta_2$になった場合はSTEP3に戻る．また，障害物と車両左前の距離が$\delta_2$以上で曲がれた場合(STEP4-2)は，車両左前と障害物の距離が最も接近したときの座標と駐車開始位置の軸が接するような円弧を生成する．
+
+\subsubsection*{STEP 5}
+それぞれのSTEPで生成した経路を逆から辿ると駐車経路になる．
+
+\begin{figure}[htbp]
+ 
+  \begin{minipage}[b]{.5\linewidth}
+    \centering
+    \includegraphics[width=.8\linewidth]{figure/1.png}
+    \caption{STEP1}
+    \label{fig:step1}
+  \end{minipage}
+  \begin{minipage}[b]{.5\linewidth}
+    \centering
+    \includegraphics[width=.8\linewidth]{figure/2.png}
+    \caption{STEP2}
+    \label{fig:step2}
+  \end{minipage}  
+\end{figure}
+
+\begin{figure}[htbp]
+ 
+  \begin{minipage}[b]{.5\linewidth}
+    \centering
+    \includegraphics[width=.9\linewidth]{figure/3.png}
+    \caption{STEP3}
+    \label{fig:step3}
+  \end{minipage}
+  \begin{minipage}[b]{.5\linewidth}
+    \centering
+    \includegraphics[width=.8\linewidth]{figure/4-1.png}
+    \caption{STEP4-1}
+    \label{fig:step4-1}
+  \end{minipage}  
+\end{figure}
+
+\begin{figure}[htbp]
+  
+  \begin{minipage}[b]{.5\linewidth}
+    \centering
+    \includegraphics[width=.8\linewidth]{figure/4-2.png}
+    \caption{STEP4-2}
+    \label{fig:step4-2}
+  \end{minipage}
+  \begin{minipage}[b]{.5\linewidth}
+    
+  \end{minipage}  
+\end{figure}
+
+\subsection{シミュレーション}
+道路幅$4[\mathrm{\, m}]$，駐車場幅$2.5[\mathrm{\, m}]$として，従来研究\cite{ogata}を用いてシミュレーションした結果を図\ref{fig:step5}に示す．青色の線が後輪軸中心の軌道，その他の色の線が車両の四隅の軌道を示している．図\ref{fig:step5}の軌道から1回の切り返しで駐車経路が生成できていることが分かる．
+
+\begin{figure}[htbp]
+
+  \centering
+    \includegraphics[width=.8\linewidth]{figure/C_250_400.png}
+    \caption{従来研究\cite{ogata}のシミュレーション結果}
+    \label{fig:step5}
+\end{figure}
+
+
+
+
+

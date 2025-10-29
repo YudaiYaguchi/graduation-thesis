@@ -1,0 +1,164 @@
+%%%
+%%%		卒業論文LaTex用テンプレート
+%%%
+%%%		[文字コード]
+%%%		UTF-8
+%%%
+%%%		[作成したLaTex環境]
+%%%		Cloud Latex
+%%%		
+%%%		[編集履歴]
+%%%		2023/12/07	ver1.0 完成, 動作確認
+%%%		
+\makeatletter
+\let\my@xfloat\@xfloat
+\makeatother
+
+\RequirePackage{plautopatch}
+\RequirePackage[l2tabu, orthodox]{nag}
+
+\documentclass[a4j, 12pt]{jarticle}
+
+%%%
+%%%		必要ならpackageは増やしてもいい
+%%%
+\usepackage[dvipdfmx]{graphicx}
+\usepackage{here}
+\usepackage{doublespace}
+\usepackage{amsmath,amssymb}
+\usepackage{amsfonts}
+\usepackage{url}
+\usepackage{cases}
+\usepackage{fancybox}
+\usepackage{ascmac}
+\usepackage{geometry}
+\usepackage{comment}
+\usepackage{graphicx}
+\usepackage{bxtexlogo}
+\usepackage{amsmath}
+\usepackage[]{multicol}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+
+
+
+\makeatletter
+\def\@xfloat#1[#2]{
+    \my@xfloat#1[#2]%
+    \def\baselinestretch{1}%
+    \@normalsize \normalsize
+}
+\makeatother
+
+%%%
+%%%		設定関連(いじらないほうがよい)
+%%%
+\renewcommand{\baselinestretch}{1.5}
+\setlength{\textheight}{24cm}
+\setlength{\topmargin}{-1cm}
+\setlength{\textwidth}{16.2cm}
+\setlength{\oddsidemargin}{-0.2cm}
+\setlength{\columnsep}{3zw}
+
+%%%
+%%%		指導教員印, 卒業年度, 卒論タイトル 
+%%%
+\title{
+	\vspace{-1cm}
+	\begin{flushright}
+ 		\begin{tabular}{|c|} \hline
+ 			\small \raisebox{10pt}{指導教員印} \\
+ 			[-15pt] \hline \\
+            [15pt] \hline
+ 		\end{tabular}
+ 		\\
+ 	\end{flushright}
+	\vspace{2cm}
+	% 卒業年度(変えるところ)
+ 	{\huge 2025年度卒業論文} \\
+ 	\vspace{3cm}
+ 	% タイトル(変えるところ)
+ 	{\huge クロソイド曲線とシグモイド関数を用いた駐車経路生成手法}\\
+    \vspace{0.8cm}
+    {\large A Parking Path Planning Method Based On Clothoid Curve \\ And Sigmoid Function}
+}
+
+%%%
+%%%		この2つは無視すること
+%%%
+\author{}
+\date{}
+
+\begin{document}
+	%%%
+	%%%		所属, 指導教員名, 自分の学籍番号と名前
+	%%%
+	\begin{singlespace}
+		% タイトルページの挿入
+		\maketitle
+		\large
+ 		\vspace{5.0cm} \par
+ 		% 大学名と学部
+ 		\hspace{9.0cm}東京都市大学　情報工学部 \\ 					
+ 		\vspace{-0.8cm} \par
+ 		% 学科名
+ 		\hspace{9.0cm}情報科学科 \\
+ 		\vspace{-0.8cm} \par
+ 		% 研究室名
+ 		\hspace{9.0cm}自動制御研究室 \\
+ 		\vspace{-0.8cm} \par
+ 		% 指導教員名, 役職
+ 		\hspace{9.0cm}\hspace{5em}大屋\hspace{0.5em}英稔　教授 \\
+ 		\vspace{-0.8cm} \par
+ 		\hspace{9.0cm}\hspace{5em}星\hspace{0.5em}義克　講師 \\
+		\vspace{-0.8cm} \par
+		% 自分の学籍番号と名前
+ 		\hspace{9.0cm}2221103\hspace{1.5em}矢口\hspace{0.5em}雄大	
+	\end{singlespace}
+	
+	\thispagestyle{empty}		% タイトルページにページ番号を振らないようにするため
+    \newpage
+	\begin{abstract}
+        近年，自動駐車技術は実用段階まで進んでいるが，狭い駐車場では自動駐車できない場合があるといった問題がある．本論文では，円弧と直線を用いた経路生成手法にクロソイド曲線とシグモイド関数を導入することにより，より滑らかな経路生成を行う手法を提案する．本論文では，提案する経路生成手法を示し，最後に数値シミュレーションによって，提案手法の有用性を検証する．
+		\\
+
+		In recent years, automated can parking systems has advanced systems for practical use. However, there is a problems in automated parking systems and there are narrow parking spaces which cannot be parked by present automated parking systems. In this thesis, we propose a new path generation method for automated parking systems. In approach, we combine the path generation method with clothoid curves and sigmoid functions. In this thesis, we show the proposed path generation method. Finally, the effectiveness of the proposed method is presented by simple numerical simulations. 
+        
+	\end{abstract}
+	\thispagestyle{empty}
+   
+	
+	%%%
+	%%%		目次の設定
+	%%%
+	\newpage 					% 表紙の次のページに目次を出力するため
+	\pagenumbering{roman}		% ページ番号をローマ数字(i,ii,iii,...)にする	
+	\setcounter{page}{1}		% ページ番号をiとする
+	\tableofcontents			% 目次の出力
+
+	%%%
+	%%%		本文の設定
+	%%%
+	\newpage 					% 目次の次のページから本文を出力するため
+	\pagenumbering{arabic}		% ページ番号をアラビア数字(1,2,3...)にする
+	\setcounter{page}{1} 		% ページ番号を1とする
+	%%%
+	%%%		本文の挿入
+	%%%	
+	%%%		[やり方]
+	%%%		\input{xyz.tex}でxyz.texファイルを挿入できる
+	%%%		ただし, 挿入するファイルの文頭に \newpage \section{}を入れること
+    
+	\input{1.tex}
+    \input{2.tex}
+    \input{3.tex}
+    \input{4.tex}
+    \input{5.tex}
+    \input{reference.tex}
+    \clearpage
+	\section*{謝辞}
+	本研究を進めるにあたり，ご多忙にも関わらず丁寧にご指導，ご鞭撻のほどをいただきました大屋 英稔 教授，星 義克 講師に深く感謝申し上げます．
+	また，悩んでいるところを見逃さず声をかけていただいた大学院生の先輩方，日頃から同じ研究室の仲間として相談に応じてくださった自動制御研究室の皆様にもお礼を申し上げます．
+	この1年間での研究生活を通じて，様々な経験を積むことができ大きく成長することができました．今後の人生でもこの経験を活かしていきたいと思います．ありがとうございました．
+\end{document}

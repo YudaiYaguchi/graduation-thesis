@@ -1,0 +1,96 @@
+\newpage
+\section{提案手法}
+
+\subsection{クロソイド曲線}
+クロソイド曲線は曲率を一定に変化させて描かれた曲線である(図\ref{fig:clothoid})．また，クロソイド曲線には次式のような，曲線長$L$と曲率半径$R_{clo}$の積が一定になるという性質がある．ここで$A$はクロソイドパラメータである．
+\begin{equation}
+  LR_{clo}= A^2
+\end{equation}
+原点を$(0,0)$としたとき，クロソイドの曲線上のある点の座標$P(x，y)$は次式のように表される．
+\begin{equation}
+x = \frac{A}{\sqrt{2}}\int_0^\theta \frac{\cos\theta}{\sqrt{\theta}}d\theta
+\end{equation}
+\begin{equation}
+y = \frac{A}{\sqrt{2}}\int_0^\theta \frac{\sin\theta}{\sqrt{\theta}}d\theta
+\end{equation}
+
+ここで$\theta$は接線角である．
+
+\begin{figure}[htbp]
+  
+    \centering
+    \includegraphics[width=.5\linewidth]{figure/clothoid.png}
+    \caption{クロソイド曲線}
+    \label{fig:clothoid}
+\end{figure}
+
+\subsection{シグモイド関数}
+シグモイド関数とは図\ref{fig:sigmoid}のように表される関数あり，$y=0$と$y=k$に漸近線をもち，次式のように表される関数である．
+\begin{equation}
+f(x)=\frac{k}{1+e^{-a x}}
+\end{equation}
+ここで$k$と$a$の値を定める必要がある．
+$k$は車両の現在位置と駐車開始位置の$y$軸方向のずれの値である．このように$k$を設定することで，$y=0$と$y=k$に漸近線をもつようなシグモイド関数になる． 
+次に，$a$を設定する際にはシグモイド関数の曲率半径の最小値が最小回転半径よりも大きくなるような条件を満たす必要がある．すなわち，次式に示すシグモイド関数の曲率半径$R_{sig}$を求める式の最小値が最小回転半径$R$よりも大きければよい．
+\begin{equation}
+R_{sig}=\frac{(1+f'(x)^2)^\frac{3}{2}}{\left| f''(x) \right|}
+\end{equation}
+\begin{equation}
+  R < R_{sig}
+\end{equation}
+また，$a$の値が大きいほど経路が短くなるので，(6)(7)式を満たす範囲で$a$を大きく設定する．
+
+\begin{figure}[htbp]
+ 
+    \centering
+    \includegraphics[width=.7\linewidth]{figure/sigmoid.png}
+    \caption{シグモイド関数($a=5,k=1$)}
+    \label{fig:sigmoid} 
+\end{figure}
+
+\subsection{経路計画の手法}
+本論文では，クロソイド曲線とシグモイド関数を用いて，円弧と直線の間に緩和曲線を導入し，滑らかな経路を生成することを目的としている．ここで，緩和曲線とは，直線から円弧に進入するときのステアリング角の急な変化を防ぐ曲線で，連続的に曲率が変化するため滑らかな経路の生成が期待できる．本研究では，図\ref{fig:map} に示すマップの赤い四角の駐車開始位置から青い四角の駐車目標位置までの経路を生成することを考える．ただし，車両が障害物に接近した場合，切り返しを行う必要があるが，切り返し時には緩和曲線は必要ないため，本論文では切り返しを考慮しない．本論文で提案する経路計画手法では，駐車目標位置から駐車開始位置へ逆向き（Backward）に経路計画を行うことによって，駐車開始位置から駐車目標位置までの経路を生成する．提案する経路計画は次のような手順で行われる．図\ref{fig:STEP1} ～\ref{fig:STEP2-2} に提案する経路計画の手順を示す．
+\begin{figure}[htbp]
+ 
+    \centering
+    \includegraphics[width=1\linewidth]{figure/map.png}
+    \caption{対象とする環境}
+    \label{fig:map} 
+\end{figure}
+
+\begin{figure}[htbp]
+ 
+    \centering
+    \includegraphics[width=0.7\linewidth]{figure/restep1.png}
+    \caption{STEP1}
+    \label{fig:STEP1}
+
+\end{figure}
+\subsubsection*{STEP1}
+まず，従来手法\cite{ogata}のSTEP4-1までと同様に，障害物と車両左前の距離が$\delta_2$以上で曲がれるまで経路を生成する．このとき，駐車開始位置の車両後輪軸中心の座標が道路の中心よりも上側か下側かを判別する．上側もしくは道路の中心ならSTEP2-1へ，下側ならSTEP2-2へ移行する(図\ref{fig:STEP1})．
+
+\subsubsection*{STEP2(STEP2-1，STEP2-2)}
+
+(STEP2-1)図\ref{fig:STEP2-1}のように，駐車開始位置を始点として車両の現在位置に向かってクロソイド曲線を用いて経路を生成する．クロソイドパラメータ$A$の値を大きくしていき，現在位置の車両後輪軸の中心の座標とクロソイド曲線の終端の座標が一致したときのクロソイドパラメータ$A$の値を用いてクロソイド曲線に基づく経路を生成する．
+
+(STEP2-2)従来手法\cite{ogata}のSTEP4-1で求めた最小回転半径上を姿勢角が$0$になるまで前進した後，図\ref{fig:STEP2-2} に示すように現在位置から駐車開始位置に向かうようなシグモイド関数で経路生成を行う．このとき，(5)，(6)式の$k$と$a$の値を定める必要がある．$k$は現在位置と駐車開始位置の車両後輪軸中心の$y$軸方向のずれの値である．ここで，$k$が定まったので
+(6)式からシグモイド関数の最小の曲率半径$R_{sig}$を求める．$a$の値を小さくしていき，$R_{sig}$の最小値が最小回転半径$R$より大きくなった時の$a$の値に決定する．定めた$k$と$a$を代入した(5)式に従って経路を生成する．
+\subsubsection*{STEP3}
+それぞれのSTEPで生成した経路を逆から辿ると駐車経路になる．
+
+\begin{figure}[btp]
+   \begin{minipage}[b]{.5\linewidth}
+    \centering
+    \includegraphics[width=1.2\linewidth]{figure/restep2.png}
+    \caption{STEP2-1}
+    \label{fig:STEP2-1}     
+  \end{minipage}  
+  \begin{minipage}[b]{.5\linewidth}    
+    \centering
+    \includegraphics[width=1.2\linewidth]{figure/restep2-2.png}
+    \caption{STEP2-2}
+    \label{fig:STEP2-2} 
+  \end{minipage}
+\end{figure}
+
+

@@ -1,0 +1,98 @@
+\newpage
+\section{シミュレーション結果と考察}
+3章で示したSTEPに従い，図\ref{fig:map}に示すマップの駐車開始位置から駐車目標位置までの経路生成を行い，シミュレーションした結果を示す．
+\subsection{シミュレーションの条件}
+本論文のシミュレーションではトヨタ自動車  ヤリス\cite{model_car}をモデルに用いた，その車両のパラメータの詳細を表\ref{table:parameter}に示す．
+シミュレーションにはショッピングモールなどでよく使われる駐車場のサイズ$3.0[\mathrm{\,m}] \times 5.0[\mathrm{\,m}]$，道路幅を$4.4[\mathrm{\, m}]$に設定したマップを使用した．また，駐車開始位置座標は$(1300,720)$，$(1300,745)$，$(1300,660)$の3パターンで検証した．
+
+\begin{figure}[tp]
+  \centering
+  \includegraphics[width=0.8\linewidth]{figure/yaris.png}
+  \label{fig:yaris} 
+  \caption{トヨタ自動車 ヤリス\cite{model_car}}
+\end{figure}
+
+\begin{table}[btp]
+ \caption{車両のパラメータ}
+  \label{table:parameter}
+  \centering
+  \begin{tabular}{cc}
+    \hline
+    パラメータ  & 値 \\
+    \hline
+    長さ  & 394[cm] \\
+    幅  & 169.5[cm]  \\
+    ホイールベース  & 255[cm]   \\
+    最小回転半径  &  322[cm]  \\
+    \hline
+  \end{tabular}
+\end{table}
+
+
+\subsection{シミュレーション結果}
+図\ref{fig:main1}(\subref{fig:sc1})，\ref{fig:main2}(\subref{fig:scup})，\ref{fig:main3}(\subref{fig:scdown})に駐車開始位置がそれぞれ$(1300,720)$，$(1300,745)$，$(1300,660)$とした場合のシミュレーション結果を示す．図\ref{fig:main1}(\subref{fig:sim})，\ref{fig:main2}(\subref{fig:simup})，\ref{fig:main2}(\subref{fig:simdown})にはそれぞれ同じ環境における従来研究\cite{ogata}によるシミュレーション結果を示す．図中の青色の線が車両後輪軸中心の軌道，その他の色の線は車両の四隅の軌道を表している．
+
+図\ref{fig:main1}(\subref{fig:sc1})と\ref{fig:main1}(\subref{fig:sim})を比較すると，図\ref{fig:main1}(\subref{fig:sim})は駐車開始位置と生成した経路にズレが発生しているが，図\ref{fig:main1}(\subref{fig:sc1})ではクロソイド曲線により姿勢角を必要以上に変えずに駐車開始位置まで滑らかな経路を生成出来ている．
+また，図\ref{fig:main2}(\subref{fig:scup})と\ref{fig:main2}(\subref{fig:simup})を比較すると，図\ref{fig:main2}(\subref{fig:simup})では駐車開始位置から大きくずれてしまっているが，図\ref{fig:main2}(\subref{fig:scup})は上手くクロソイド曲線で駐車開始位置まで滑らかな経路を生成出来ている．
+\begin{figure}[!hb] 
+\begin{minipage}[b]{.5\linewidth}  
+    \centering
+    \includegraphics[width=1.2\linewidth]{figure/sim_clo_mid.png}
+    \subcaption{提案手法}
+    \label{fig:sc1} 
+  \end{minipage}
+  \begin{minipage}[b]{.5\linewidth} 
+    \centering
+    \includegraphics[width=1.2\linewidth]{figure/C_300-440_720.png}
+    \subcaption{従来研究\cite{ogata}}
+    \label{fig:sim} 
+\end{minipage}
+  \caption{駐車開始位置$(1300,720)$のシミュレーション}
+  \label{fig:main1}
+\end{figure}
+\newpage
+\begin{figure}[!ht]
+ \begin{minipage}[b]{.5\linewidth}
+
+    \centering
+    \includegraphics[width=1.2\linewidth]{figure/sim_clo_up.png}
+    \subcaption{提案手法}
+    \label{fig:scup} 
+  \end{minipage}
+  \begin{minipage}[b]{.5\linewidth}
+  
+    \centering
+    \includegraphics[width=1.2\linewidth]{figure/C_300-440_745.png}
+    \subcaption{従来研究\cite{ogata}}
+    \label{fig:simup} 
+\end{minipage}
+    \caption{駐車開始位置$(1300,745)$のシミュレーション}
+    \label{fig:main2}
+\end{figure}
+
+{更に，図\ref{fig:main3}(\subref{fig:scdown})と\ref{fig:main3}(\subref{fig:simdown})を比較すると，駐車スペースから完全に出た後にシグモイド関数を用いて駐車開始位置まで滑らかな経路を生成していることがわかる．
+これらの結果から，提案手法の方が従来手法\cite{ogata}よりも駐車開始位置まで滑らかな経路を生成出来ていることが確認できた．}
+
+
+\begin{figure}[!b]
+ \begin{minipage}[b]{.5\linewidth}
+  
+    \centering
+    \includegraphics[width=1.2\linewidth]{figure/sim_sig_down.png}
+    \subcaption{提案手法}
+    \label{fig:scdown} 
+  \end{minipage}
+  \begin{minipage}[b]{.5\linewidth}
+  
+    \centering
+    \includegraphics[width=1.2\linewidth]{figure/C_300-440_660.png}
+    \subcaption{従来研究\cite{ogata}}
+    \label{fig:simdown} 
+\end{minipage}
+  \caption{駐車開始位置$(1300,660)$のシミュレーション}
+  \label{fig:main3}
+\end{figure}
+
+
+
+\clearpage
