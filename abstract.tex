@@ -1,0 +1,28 @@
+\begin{abstract}
+  近年，自動走行ロボットの研究が盛んに行われている．
+  特に物流業界では自動配送ロボットの実用化に向けた開発や法律の改正が進められており，トラック運転手の長時間労働是正や物流分野の人手不足の緩和が期待される．
+  
+  自動配送ロボットの社会実装には未知環境における安全な経路生成が不可欠である．
+  大局的経路計画やニューラルネットワークを用いた方法があるが，大局的経路計画では曲がり角付近で障害物に接近しすぎる問題がある．
+  また，ニューラルネットワークは学習に多くのデータと時間を要する．
+  そのため，これらの手法は未知環境下でのリアルタイムな経路生成には不向きである．
+  一方，ポテンシャル法は計算量が少なくリアルタイム性に優れた手法である．
+
+  本研究では，加速度推定機能を組み込んだポテンシャル法による動的障害物回避手法の構築を目的とする．
+  加速度推定を導入することで，障害物の将来的な運動をより高精度に予測し，動的環境下においてより滑らかで安全な経路生成を実現する手法を提案し，
+  最後にシミュレーションによって提案する手法の有効性を検証する．
+
+  \vspace{10pt} 
+  
+  In recent years, research on autonomous mobile robots has been actively conducted.
+  In particular, in the logistics industry, the development and legal reforms toward the practical use of autonomous delivery robots have been progressing, which are expected to help reduce the long working hours of truck drivers and alleviate labor shortages.
+  
+  For the social implementation of autonomous delivery robots, safe path generation in unknown environments is essential.
+  Although methods such as global path planning and neural networks have been proposed, global path planning tends to cause robots to approach obstacles too closely at corners, and neural networks require a large amount of training data and time.
+  Therefore, these methods are not suitable for real-time path generation in unknown environments.
+  On the other hand, the potential field method is a lightweight algorithm with low computational cost and excellent real-time performance.
+  
+  This study aims to construct a dynamic obstacle avoidance method based on the potential field approach incorporating acceleration estimation.
+  By introducing acceleration estimation, the robot can predict the future motion of obstacles more accurately, enabling smoother and safer path generation in dynamic environments.
+  Finally, the effectiveness of the proposed method is verified through simulation.
+\end{abstract}
