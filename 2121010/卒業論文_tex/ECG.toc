@@ -1,0 +1,39 @@
+\contentsline {section}{\numberline {1}序論}{1}{}%
+\contentsline {subsection}{\numberline {1.1}研究背景}{1}{}%
+\contentsline {subsection}{\numberline {1.2}従来研究}{2}{}%
+\contentsline {subsection}{\numberline {1.3}研究目的と研究意義}{3}{}%
+\contentsline {subsection}{\numberline {1.4}本論文の構成と用いる表記}{4}{}%
+\contentsline {section}{\numberline {2}心電図波形}{5}{}%
+\contentsline {subsection}{\numberline {2.1}正常洞調律(Sinus Rhythm:SR)}{5}{}%
+\contentsline {subsection}{\numberline {2.2}無脈性電気活動(Pulseless Electorical Activity:PEA)}{5}{}%
+\contentsline {subsection}{\numberline {2.3}心室頻拍(Ventricular Tachycardia:VT)}{6}{}%
+\contentsline {subsection}{\numberline {2.4}心室細動(Ventricular Fibrillation:VF)}{6}{}%
+\contentsline {subsection}{\numberline {2.5}心室細動に対する除細動の効果}{7}{}%
+\contentsline {subsection}{\numberline {2.6}本論文で用いる心電図波形}{8}{}%
+\contentsline {subsection}{\numberline {2.7}心電図波形の前処理}{9}{}%
+\contentsline {section}{\numberline {3}心電図波形の解析手法}{11}{}%
+\contentsline {subsection}{\numberline {3.1}連続ウェーブレット変換(Continuous Wavelet transform)}{11}{}%
+\contentsline {subsection}{\numberline {3.2}スカログラム}{12}{}%
+\contentsline {subsection}{\numberline {3.3}疑似微分作用素(Pseudo-Differential Operator)}{12}{}%
+\contentsline {subsection}{\numberline {3.4}NSI(Normalized Spectrum Index)}{13}{}%
+\contentsline {subsection}{\numberline {3.5}NTI(Normalized Time Index)}{15}{}%
+\contentsline {subsection}{\numberline {3.6}SDW(Scale Distribution Width)}{15}{}%
+\contentsline {subsection}{\numberline {3.7}ポアンカレプロット解析}{16}{}%
+\contentsline {subsection}{\numberline {3.8}スペクトルエントロピー}{16}{}%
+\contentsline {subsection}{\numberline {3.9}スカログラムに基づく特徴量の抽出}{18}{}%
+\contentsline {subsection}{\numberline {3.10}特徴量抽出}{20}{}%
+\contentsline {subsection}{\numberline {3.11}抽出された特徴量}{22}{}%
+\contentsline {section}{\numberline {4}予測に有効な特徴量の選択}{29}{}%
+\contentsline {subsection}{\numberline {4.1}$\chi ^2$検定}{29}{}%
+\contentsline {subsection}{\numberline {4.2}選択された特徴量}{30}{}%
+\contentsline {section}{\numberline {5}除細動効果予測システム}{32}{}%
+\contentsline {subsection}{\numberline {5.1}予測前処理}{32}{}%
+\contentsline {subsubsection}{\numberline {5.1.1}SMOTE法}{32}{}%
+\contentsline {subsubsection}{\numberline {5.1.2}標準化}{32}{}%
+\contentsline {subsection}{\numberline {5.2}サポートベクターマシン}{32}{}%
+\contentsline {subsection}{\numberline {5.3}Leave-One-Out Cross-Validation}{34}{}%
+\contentsline {subsection}{\numberline {5.4}評価方法}{34}{}%
+\contentsline {section}{\numberline {6}実験結果}{35}{}%
+\contentsline {subsection}{\numberline {6.1}除細動の効果予測}{35}{}%
+\contentsline {subsection}{\numberline {6.2}予測処理時間の測定}{37}{}%
+\contentsline {section}{\numberline {7}結論と今後の課題}{39}{}%

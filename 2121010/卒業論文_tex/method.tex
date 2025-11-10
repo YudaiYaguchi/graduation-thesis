@@ -1,0 +1,649 @@
+\newpage
+
+\section{心電図波形の解析手法}
+本章では，解析手法と特徴量抽出について説明する．
+
+\subsection{連続ウェーブレット変換(Continuous Wavelet transform)}
+ウェーブレット変換(Wavelet Transform:WT)は，関数をある形式に変換する手法であり，原信号の特徴を調べるのに適した形式に変換したり，もとのデータセットを簡潔に
+記述することができるような形式に変換できる．ウェーブレット変換を行うには，局在した波形であるウェーブレット関数$\phi$が必要である．この関数を平行移動(トランスレーション)や
+伸張(ダイレーション)という変換の過程を通じて，時間やスケールで関数を広げる操作を行い，別の形式に変換される．
+ウェーブレット変換には連続ウェーブレット変換(Continuous Wavelet Transform:CWT)と離散ウェーブレット変換(Discrete Wavelet Transform:DWT)が存在するが，本研究では信号の時間変化を観測したいため，
+次式のように定義される連続ウェーブレット変換を採用する\cite{SCI}．
+\begin{align}
+  W_{\phi}f(a,b) &\triangleq \frac{1}{\sqrt{a}}\int_{-\infty}^{\infty}f(t)\overline{\phi\bigg(\frac{t-b}{a}\bigg)}dt \label{f:wavelet}\\
+  \phi(t) &\triangleq \frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{t^2}{2\sigma^2}e^{jwt}} \label{f:m_wavelet}
+\end{align}
+ここで$f(t)$は原信号，$a$はスケールパラメータ(scale parameter)，$b$はシフトパラメータ(shift parameter)と呼ばれる．
+本研究では$a$は1-20[Hz]に対して、0.1刻みの200段階，bをサンプリング周波数250[Hz]$\times$10[sec]の計2500段階変化させ計算を行う。
+また，$\phi(t)$はマザーウェーブレットであり，本研究では(\ref{f:m_wavelet})式のガボールウェーブレットを用いる．ここで$w$は基底角周波数，$\sigma$は正規分布の分散を表す．
+ウェーブレット変換には時間の測定を正確にするほどスペクトルの計測の正確さが損なわれるハイゼンベルクの不確定性原理が存在するが，
+ガウス関数の窓を持つ複素正弦波は，時間-周波数平面で最も小さい面積のハイゼンベルクの箱を持ち不確定性原理の影響を最小化することが知られている．
+すなわち最適な時間-周波数のエネルギー分布を得ることが可能となる\cite{wavelet-fu}\cite{wevelet}．
+なお，本研究では$w$，$\sigma$は$w = 4\pi$，$\sigma = 0.5$と実験的に決定した．
+
+\subsection{スカログラム}
+信号$x(t)$に含まれる全エネルギーはその信号の振幅の二乗積分として定義される．
+\begin{eqnarray}
+  E = \int_{-\infty}^{\infty}|x(t)|^2dt < \infty \label{f:enegy}
+ \end{eqnarray}
+
+(\ref{f:enegy})式は，信号は有限のエネルギーを持つことを意味する\cite{wevelet}．これより，あるスケール$a$と位置$b$での信号のエネルギーの相対値は，2次元ウェーブレットのエネルギー密度関数
+によって与えられる．
+\begin{eqnarray}
+  E(a,b) = |W_{\phi}f(a,b)|^2
+\end{eqnarray}
+$E(a,b)$のプロットをスカログラム(Scalogram)と定義され，信号の主要なエネルギー的特徴を位置やスケールによって強調するものである．
+VF波形(図\ref{fig:VF})のスカログラムを図\ref{fig:scalo}に示す．ここで横軸に縦軸に周波数[Hz]，時間[sec]とし，正規化したエネルギーをカラーバーで示す．
+
+% pseudo differential operator
+\subsection{疑似微分作用素(Pseudo-Differential Operator)}
+疑似微分作用素は主にフーリエ変換で使用され，次式で定義される\cite{JSCI2022}．
+\begin{eqnarray}
+  (\mathcal{F}f')(\epsilon) \triangleq -i\epsilon\hat{f}(\epsilon) \label{f:pseudo-1}
+\end{eqnarray}
+ここで$\mathcal{F}$をフーリエ変換，また$f'(t)$は$f(t)$の微分を表す．$\hat{f}(\epsilon)$はフーリエ変換後の信号である．
+信号$f(t)$に疑似微分作用素を用いると式(\ref{f:pseudo-2})で表すことができる．
+\begin{eqnarray}
+  \Big(-\frac{d^2}{dt^2}+1\Big)^{\alpha}f(t) \label{f:pseudo-2}
+\end{eqnarray}
+疑似微分作用素は，二階微分と定数項1の組み合わせであり，$\alpha$は作用素の指数であり，次数を制御する．
+この疑似微分作用素のフーリエ変換を
+\begin{eqnarray}
+  \hat{f}(\epsilon)\to(\epsilon^2+1)^\alpha\hat{f}(\epsilon) \label{f:pseudo-3}
+\end{eqnarray}
+と表すことができる．このように，疑似微分作用素をフーリエ変換の形に拡張することができ，次式の二つの関数を用いて計算することができる．
+\begin{align}
+  L\colon{a}\in{R}_+&\rightarrow{L(a)}\in{C} \label{f:pseudo-4-1} \\
+  H\colon{y}\in{C}_+&\rightarrow{H(y)}\in{C} \label{f:pseudo-4-2}
+\end{align}
+
+$L$がウェーブレット変換における疑似微分作用素であり，$H$は非線形関数である．この二つの関数を用いて，疑似微分作用素を用いたウェーブレット変換における
+エネルギー分布であるスカログラムを次式で導出することができる．
+\begin{eqnarray}
+  E(a,b)_{pdo} = H(L(a)\cdot{W_{\phi}f}(a,b)) \label{f:pseudo-5}
+\end{eqnarray}
+本研究では，文献\cite{JSCI2022}で提案されている$L(a)=\frac{1}{a}\text{，}H(y) = |y|^\frac{1}{4}$を採用する．
+実際の疑似微分作用素を用いたウェーブレット変換のスカログラムの例を図\ref{fig:scalo_pdo}に示す．図\ref{fig:scalo}，\ref{fig:scalo_pdo}を比較すると
+通常のウェーブレット変換では得られない高周波帯のエネルギー(6Hz$\sim$20Hz)の特徴を得ることが可能となる．
+
+\begin{figure}[t]
+\centering
+\begin{minipage}[b]{0.49\columnwidth}
+    \centering
+    \includegraphics[width=1.0\columnwidth]{figure/scalo_success_10.png}
+    \caption{スカログラム$E(a,b)$ \label{fig:scalo}}
+\end{minipage}
+\begin{minipage}[b]{0.49\columnwidth}
+    \centering
+    \includegraphics[width=1.0\columnwidth]{figure/scalo_pdo_success_10.png}
+    \caption{$L(a)=\frac{1}{a}, H(y)=|y|^\frac{1}{4}$におけるスカログラム$E_{pdo}(a,b)$ \label{fig:scalo_pdo}}
+\end{minipage}
+\end{figure}
+
+%% NSI
+\subsection{NSI(Normalized Spectrum Index)}
+\begin{figure}[t]
+  \centering
+  \begin{minipage}[b]{0.49\columnwidth}
+      \centering
+      \includegraphics[width=1.0\columnwidth]{figure/NSI_success_10.png}
+      \caption{図\ref{fig:scalo}のスカログラムによって得られた$NSI$ \label{fig:NSI}}
+  \end{minipage}
+  \begin{minipage}[b]{0.49\columnwidth}
+      \centering
+      \includegraphics[width=1.0\columnwidth]{figure/NSI_pdo_success_10.png}
+      \caption{図\ref{fig:scalo_pdo}のスカログラムによって得られた$NSI_{pdo}$ \label{fig:NSI_pdo}}
+  \end{minipage}
+\end{figure}
+
+NSI(Normalized Spectrum Index)はスカログラムにおける周波数に対するエネルギーの重心の変化を表したものであり次式で定義される．
+\begin{equation}
+  NSI(b) = \frac{\sum_{a}^{}E(a,b)f(a)}{\sum_{a}^{}E(a,b)} \label{f:NSI}
+\end{equation}
+$E(a,b)$はスカログラム，$f(a)$は$a$サンプル目の周波数を示す．本研究では，通常のウェーブレット変換と疑似微分作用素を用いたウェーブレット変換を用いるため
+それぞれに対するスカログラムが導出できる．本研究では，次式のように疑似微分作用素を用いたスカログラムに対するNSIを導出する．
+\begin{equation}
+  NSI_{pdo}(b) = \frac{\sum_{a}^{}E_{pdo}(a,b)f(a)}{\sum_{a}^{}E_{pdo}(a,b)} \label{f:NSI_pdo}
+\end{equation}
+ここで，図\ref{fig:scalo}，\ref{fig:scalo_pdo}のスカログラムに対するNSIを図\ref{fig:NSI}，\ref{fig:NSI_pdo}に示す．
+
+%% NTI
+\subsection{NTI(Normalized Time Index)}
+\begin{figure}[t]
+  \centering
+  \begin{minipage}[b]{0.49\columnwidth}
+      \centering
+      \includegraphics[width=1.0\columnwidth]{figure/NTI_success_10.png}
+      \caption{図\ref{fig:scalo}のスカログラムによって得られた$NTI$ \label{fig:NTI}}
+  \end{minipage}
+  \begin{minipage}[b]{0.49\columnwidth}
+      \centering
+      \includegraphics[width=1.0\columnwidth]{figure/NTI_pdo_success_10.png}
+      \caption{図\ref{fig:scalo_pdo}のスカログラムによって得られた$NTI_{pdo}$ \label{fig:NTI_pdo}}
+  \end{minipage}
+\end{figure}
+
+NTI(Normalized Time Index)はスカログラムの時間軸におけるエネルギーの重心の動きを表したものであり，次式で求めることができる\cite{nature2023}．
+\begin{align}
+  NTI(a) &= \frac{\sum_{b}^{}E(a,b)T(b)}{\sum_{b}^{}E(a,b)} \label{f:NTI} \\
+  NTI_{pdo}(a) &= \frac{\sum_{b}^{}E_{pdo}(a,b)T(b)}{\sum_{b}^{}E_{pdo}(a,b)} \label{f:NTI_pdo}
+\end{align}
+$E(a,b),E_{pdo}(a,b)$はスカログラム，$T(b)$は$b$番目の時刻を示す．NSIと同様にスカログラムから求められるNTIを図\ref{fig:NTI}，\ref{fig:NTI_pdo}に示す． 
+これまではNSIを用いて，スカログラムの周波数軸に対する特徴のみを抽出していた．NTIを使用することでこれまでに無かった時間軸に対する特徴を抽出することが可能になる．
+
+%% SDW
+\subsection{SDW(Scale Distribution Width)}
+スカログラムのある時刻に着目することで，周波数とエネルギーの関連性を把握することが可能である．このとき，エネルギーの最大値の60\%を占めるピーク幅を
+$SDW$(Scale Distribution Width)と定義する\cite{SDW}．$SDW$により，ある時刻においてエネルギー分布がどれだけ広がっているか，また集中しているか測ることが可能となる．図\ref{fig:SDW}，\ref{fig:SDW_pdo}
+にスカログラムから得られた$SDW$を示す．
+
+\begin{figure}[t]
+  \centering
+  \begin{minipage}[b]{0.49\columnwidth}
+      \centering
+      \includegraphics[width=1.0\columnwidth]{figure/SDW_success_10.png}
+      \caption{図\ref{fig:scalo}のスカログラムによって得られた$SDW$ \label{fig:SDW}}
+  \end{minipage}
+  \begin{minipage}[b]{0.49\columnwidth}
+      \centering
+      \includegraphics[width=1.0\columnwidth]{figure/P_SDW_success_10.png}
+      \caption{図\ref{fig:scalo_pdo}のスカログラムによって得られた$SDW_{pdo}$ \label{fig:SDW_pdo}}
+  \end{minipage}
+\end{figure}
+
+%% ポアンカレプロット解析
+\subsection{ポアンカレプロット解析}
+心電図波形より，時系列信号の変化を視覚的に表し，信号の複雑さと自己相似性を測ることができるポアンカレプロット解析を行う．
+ポアンカレプロットの例を図\ref{fig:PP2}に示し，横軸に$i$番目の信号$x_i$，そして縦軸が$i+1$番目の信号$x_{i+1}$を表し，各点を$p_i(x_i,x_{i+1})$とする．
+さらに，本研究では$p_i$，$p_{i+1}$の連続する点からユークリッド距離$l_i$を次式を用いて算出する．
+\begin{equation}
+  l_i = d(p_i,p_{i+1}) = \sqrt{(x_{i+1}-x_i)^2 + (x_{i+2}-x_{i+1})^2} \label{f:PP}
+\end{equation}
+図\ref{fig:PP}に実際に求められたユークリッド距離$l_i$を示す．
+
+\begin{figure}[t]
+  \centering
+  \begin{minipage}[b]{0.49\columnwidth}
+      \centering
+      \includegraphics[width=1.0\columnwidth]{figure/PP2_success_10.png}
+      \caption{図\ref{fig:VF_success}に対するポアンカレプロット \label{fig:PP2}}
+  \end{minipage}
+  \begin{minipage}[b]{0.49\columnwidth}
+      \centering
+      \includegraphics[width=1.0\columnwidth]{figure/PP_success_10.png}
+      \caption{図\ref{fig:PP2}に対する$l_{i}$ \label{fig:PP}}
+  \end{minipage}
+\end{figure}
+
+%% SHANON RENYI
+\subsection{スペクトルエントロピー}
+シャノンエントロピー(Shannon Entropy:$\mathcal{S}_e$)とレニーエントロピー(Renyi Entropy:$\mathcal{R}_e$)はてんかん患者の識別など脳波の分析で使用されている\cite{entoropy}．
+\begin{figure}[t]
+  \centering
+  \begin{minipage}[b]{0.49\columnwidth}
+      \centering
+      \includegraphics[width=1.0\columnwidth]{figure/ShEn_success_10.png}
+      \caption{図\ref{fig:scalo}のスカログラムによって得られた$\mathcal{S}_e$ \label{fig:shen}}
+  \end{minipage}
+  \begin{minipage}[b]{0.49\columnwidth}
+      \centering
+      \includegraphics[width=1.0\columnwidth]{figure/P_ShEn_success_10.png} 
+      \caption{図\ref{fig:scalo_pdo}のスカログラムによって得られた${\mathcal{S}_e}_{pdo}$ \label{fig:shen_pdo}}
+  \end{minipage}
+\end{figure}
+$\mathcal{S}_e$，$\mathcal{R}_e$は次式を用いて算出できる．
+\begin{align}
+  P(k,j) &= \frac{E(k,j)}{\sum_{j}^{}E(k,j)} \label{f:P(k,l)} \\
+  P(k,j)_{pdo} &= \frac{E(k,j)_{pdo}}{\sum_{j}^{}E(k,j)_{pdo}} \label{f:P(k,j)_pdo} 
+\end{align}
+$E(k,j)$は時刻$k$，$j$サンプル目のエネルギー，$P(k,j)$は時刻$k$サンプル目のエネルギーの総和と，周波数$j$サンプル目の比を示す．
+$\mathcal{S}_e$の算出方法を式(\ref{f:shen})，(\ref{f:shen_pdo})，$\mathcal{R}_e$を式(\ref{f:reen})，(\ref{f:reen_pdo})に示す．
+\begin{align}
+  \mathcal{S}_e &= -P(k,j)\sum_{j}^{}\text{log}_2P(k,j) \label{f:shen} \\
+  {\mathcal{S}_e}_{pdo} &= -P(k,j)_{pdo}\sum_{j}^{}\text{log}_2P(k,j)_{pdo} \label{f:shen_pdo} \\
+  \mathcal{R}_e &= \frac{1}{1-\alpha}\text{log}\sum_{j}^{}P(k,j)^\alpha \label{f:reen} \\
+  {\mathcal{R}_e}_{pdo} &= \frac{1}{1-\alpha}\text{log}\sum_{j}^{}P(k,j)_{pdo}^\alpha \label{f:reen_pdo}
+\end{align}
+このとき，シャノンエントロピーを1パラメータ拡張したものがレニーエントロピーであり，本研究では先行研究\cite{SCI}と同様に$\alpha = 2$
+を使用する．シャノンエントロピーを図\ref{fig:shen}，\ref{fig:shen_pdo}，レニーエントロピーを図\ref{fig:reen}，\ref{fig:reen_pdo}に示す．
+
+\begin{figure}[t]
+  \centering
+  \begin{minipage}[b]{0.49\columnwidth}
+      \centering
+      \includegraphics[width=1.0\columnwidth]{figure/ReEn_success_10.png}
+      \caption{図\ref{fig:scalo}のスカログラムによって得られた$\mathcal{R}_e$ \label{fig:reen}}
+  \end{minipage}
+  \begin{minipage}[b]{0.49\columnwidth}
+      \centering
+      \includegraphics[width=1.0\columnwidth]{figure/P_ReEn_success_10.png}
+      \caption{図\ref{fig:scalo_pdo}のスカログラムによって得られた${\mathcal{R}_e}_{pdo}$ \label{fig:reen_pdo}}
+  \end{minipage}
+\end{figure}
+
+\subsection{スカログラムに基づく特徴量の抽出}
+スカログラムからは4種類の特徴量抽出し検討する．以下にこれらの抽出方法を示す．
+ここで，$j$は周波数サンプル番号，$k$は周波数サンプル番号，$E_{(k,j)}$は時間サンプル数$k$と周波数サンプル数$j$のときのエネルギーを示す．
+\begin{itemize}
+  \item エネルギー比率
+\begin{eqnarray}
+  \mathcal{H}_{\alpha,\beta} = \frac{P_{[\beta-20]}^F}{P_{[\alpha-20]}^F}
+\end{eqnarray}
+スカログラムのすべてのエネルギーに対して，特定の範囲の周波数を用いて比をとる．このとき，$P_{[\alpha-20]}^F$は$\alpha{\sim}20[Hz]$までの周波数の総エネルギーであり，
+同様に$P_{[\beta-20]}^F$は$\beta{\sim}20{Hz}$を示す．本研究では$\alpha=0$，$\beta=5.8$とする．
+\end{itemize}
+
+\begin{itemize}
+  \item NSIとピーク周波数との差の二乗平均
+\begin{eqnarray}
+  \epsilon^r = \frac{1}{N}\sum_{k=1}^{N}(NSI(k)-f_r(k))^2
+\end{eqnarray}
+$f_r(k)$は時刻$k$においてエネルギーが最大となる周波数を表す．このピークの周波数とNSI差を取り，二乗して時間平均をとったものを特徴量として抽出する．
+\end{itemize}
+
+\begin{itemize}
+  \item 周波数による重みづけ
+\begin{align}
+  \mathcal{S}^w &= \sum_{k=1}^{N} \sum_{j=1}^{200} E^*_{(k,j)} f^{(k)}_j \\
+  E^*_{(k,j)} &=
+  \begin{cases}
+    E^*_{(k,j)} - T^* & \text{if } E^*_{(k,j)} - T^* > 0, \\
+    0 & \text{if } E^*_{(k,j)} - T^* \leq 0.
+  \end{cases}
+\end{align}
+\end{itemize}
+ここで，$f^{(k)}_j$は時間サンプル$k$における$j$サンプル目の周波数であり，
+$E^*_{(k,j)}$は正規化されたスカログラムのエネルギーを示している．また，$T^*$は閾値であり，本研究では$T^*=0.6$とする．
+
+
+\begin{itemize}
+  \item スカログラムの時刻$k$におけるエネルギーの総和の最大値
+\begin{eqnarray}
+  P_{NNSM} = \max_{k}\{\sum_{j=1}^{200}E_{(k,j)},k = 1,2,\dots,N\}
+\end{eqnarray}
+\end{itemize}
+この特徴量は各時間$k$におけるエネルギーのうち最大値を特徴量としたものである．
+
+\begin{itemize}
+  \item $SPP$(Spectral Pole Power)
+\end{itemize}
+$SPP$は，スカログラムのパワースペクトル密度(Power Spectral Density:PSD)によって求めることができる\cite{spp}．
+本研究では，AR(Auto Regressive)モデルで波形を近似し，Yule Walker法を用いて信号の周波数成分におけるパワー分布を求める．
+フーリエ変換から求める手法も存在するが，Yule Walker法を使用することでグラフ形状が平滑でスペクトルの可読性が高く好まれる．
+$SPP$は次式によって算出することができる．
+\begin{eqnarray}
+  SPP = \sum_{l=1}^{N}f_{pole}(l){\cdot}P_{pole}(l) \label{f:SPP}
+\end{eqnarray}
+すなわち$SPP$は，ARモデルより求められる固有周波数$f_{pole}$と固有エネルギー$P_{pole}$によって求めることができる．
+
+\subsection{特徴量抽出}
+本研究では，心電図波形から得られるポアンカレプロット，また通常のウェーブレット変換と疑似微分作用を用いたウェーブレット変換を使用し，
+得られるスカログラムから導出した$NSI$，$NTI$，$SDW$，$\mathcal{S}_e$，$\mathcal{R}_e$といった時系列信号に対して，基本統計量(平均，分散，標準偏差等)
+を特徴量として採用した．以下にそれぞれの特徴量の抽出方法を示す．ここで時系列信号を$s(k)$とし，$k$を時間サンプル，$N$を時間サンプル数の総数とする．
+
+\begin{itemize}
+  \item 平均
+\end{itemize}
+\begin{eqnarray}
+  \bar{s} = \frac{1}{N}\sum_{k=1}^{N}s(k) \label{f:mean}
+\end{eqnarray}
+
+\begin{itemize}
+  \item 分散
+\end{itemize}
+\begin{eqnarray}
+  \mathcal{V} = \frac{1}{N}\sum_{k=1}^{N}(s(k)-\bar{s})^2 \label{f:V}
+\end{eqnarray}
+
+\begin{itemize}
+  \item 標準偏差
+\end{itemize}
+\begin{eqnarray}
+  SD_s = \sqrt{\mathcal{V}} \label{f:sd}
+\end{eqnarray}
+
+\begin{itemize}
+  \item エネルギー
+\end{itemize}
+\begin{eqnarray}
+  \mathcal{P}_s = \sum_{k=1}^{N}s(k)^2 \label{f:P}
+\end{eqnarray}
+
+\begin{itemize}
+  \item 累積の傾き
+\end{itemize}
+\begin{eqnarray}
+  \mathcal{A}_s = \frac{1}{N-1}\sum_{k=1}^{N}|s(k+1)-s(k)| \label{f:A}
+\end{eqnarray}
+
+\newpage
+\begin{itemize}
+  \item 尖度
+\end{itemize}
+\begin{eqnarray}
+  \mathcal{K}_s = \frac{1}{(\mathcal{V}_s)^3}\frac{1}{N}\sum_{k=1}^{N}(s(k)-\bar{s})^2 \label{f:K}
+\end{eqnarray}
+
+\begin{itemize}
+  \item 歪度
+\end{itemize}
+\begin{eqnarray}
+  \mathcal{SQ}_s = \frac{1}{(\mathcal{V}_s)^2}\frac{1}{N}\sum_{k=1}^{N}(s(k)-\bar{s})^4 \label{f:sq}
+\end{eqnarray}
+
+\begin{itemize}
+  \item Entropy-Based Index
+\end{itemize}
+\begin{eqnarray}
+  EBI_s = -\sum_{k=1}^{N}|s(k)|{\cdot}\text{log}_2|s(k)| \label{f:ebi}
+\end{eqnarray}
+
+\begin{itemize}
+  \item 最頻値
+\end{itemize}
+$s(k)$の中で最も出現頻度が高い値を最頻値とする．
+
+\begin{itemize}
+  \item 中央値
+\end{itemize}
+$s'(k)$を$s(k)$を昇順に並べ替えた信号とするとき，次式で定義される ．
+\begin{eqnarray}
+  \mathcal{Q}_s = 
+  \begin{cases}
+    \frac{1}{2}{s'\big(\frac{N}{2}\big)+s'\big(\frac{N}{2}+1\big)} & \text{if $N \equiv 0 \pmod 2$} \\
+    s'\big(\frac{N+1}{2}\big) & \text{if $N \equiv 1 \pmod 2$}
+  \end{cases}
+\end{eqnarray}
+
+加えて，各時系列信号$s(k)$の振幅を250段階に分割してヒストグラム$H_s(m),m = 1,2,...,250$を生成し，以下の3つの特徴量を抽出する．
+\begin{itemize}
+  \item ヒストグラムの平均
+\end{itemize}
+\begin{eqnarray}
+  \bar{h_s} = \frac{1}{250}\sum_{m=1}^{250}H_s(m)
+\end{eqnarray}
+
+\newpage
+\begin{itemize}
+  \item ヒストグラムの分散
+\end{itemize}
+\begin{eqnarray}
+  \mathcal{V_s}^h = \frac{1}{250}\sum_{m=1}^{250}(H_s(m)-\bar{h_s})^2
+\end{eqnarray}
+
+\begin{itemize}
+  \item ヒストグラムの累積の傾き
+\end{itemize}
+\begin{eqnarray}
+  \mathcal{A_s}^h = \frac{1}{250-1}\sum_{m=1}^{250-1}|H_s(m+1)-H_s(m)|
+\end{eqnarray}
+
+\subsection{抽出された特徴量}
+以下に抽出された特徴量152種類とその表記を示す．
+\begin{table}[h]
+  \begin{center} \caption{ECGから得られる特徴量}
+    \begin{tabular}{|l|c|c|} \hline
+      No. & 特徴量 & 記号 \\ \hline \hline
+      1 & ECGの平均 & $\overline{ECG}$ \\ \hline
+      2 & ECGの分散 & $\mathcal{V}_{ECG}$ \\ \hline
+      3 & ECGの累積の傾き & $\mathcal{A}_{ECG}$ \\ \hline
+      4 & ECGの標準偏差 & $SD_{ECG}$ \\ \hline
+      5 & ECGの尖度 & $\mathcal{SQ}_{ECG}$ \\ \hline
+      6 & ECGの歪度 & $\mathcal{K}_{ECG}$ \\ \hline
+      7 & ECGのエネルギー & $\mathcal{P}_{ECG}$ \\ \hline
+      8 & ECGのEntoropy Based Index & $EBI_{ECG}$ \\ \hline
+      9 & ECGの最頻値 & $\mathcal{M}_{ECG}$ \\ \hline
+      10 & ECGのヒストグラムの分散 & ${\mathcal{V}_{ECG}}^h$ \\ \hline
+      11 & ECGのヒストグラムの累積の傾き & ${\mathcal{A}}^h_{ECG}$ \\ \hline  
+    \end{tabular}
+  \end{center}
+\end{table}
+
+\begin{table}[p]
+  \begin{center} \caption{NSIから得られる特徴量}
+    \begin{tabular}{|l|c|c|} \hline
+      No. & 特徴量 & 記号 \\ \hline \hline
+      12 & NSIの平均 & $\overline{NSI}$ \\ \hline
+      13 & NSIの分散 & $\mathcal{V}_{NSI}$ \\ \hline
+      14 & NSIの標準偏差 & $SD_{NSI}$ \\ \hline
+      15 & NSIの累積の傾き & $\mathcal{A}_{NSI}$ \\ \hline
+      16 & NSIの尖度 & $\mathcal{SQ}_{NSI}$ \\ \hline
+      17 & NSIの歪度 & $\mathcal{K}_{NSI}$ \\ \hline
+      18 & NSIのエネルギー & $\mathcal{P}_{NSI}$ \\ \hline
+      19 & NSIのEntoropy Based Index & $EBI_{NSI}$ \\ \hline
+      20 & NSIの最頻値 & $\mathcal{M}_{NSI}$ \\ \hline
+      21 & NSIの中央値 & $\mathcal{Q}_{NSI}$ \\ \hline
+      22 & NSIのヒストグラムの分散 & ${\mathcal{V}}^h_{NSI}$ \\ \hline
+      23 & NSIのヒストグラムの累積の傾き & ${\mathcal{A}}^h_{NSI}$ \\ \hline  
+    \end{tabular}
+  \end{center}
+\end{table}
+
+\begin{table}[p]
+  \begin{center} \caption{NTIから得られる特徴量}
+    \begin{tabular}{|l|c|c|} \hline
+      No. & 特徴量 & 記号 \\ \hline \hline
+      24 & NTIの平均 & $\overline{NTI}$ \\ \hline
+      25 & NTIの分散 & $\mathcal{V}_{NTI}$ \\ \hline
+      26 & NTIの標準偏差 & $SD_{NTI}$ \\ \hline
+      27 & NTIの累積の傾き & $\mathcal{A}_{NTI}$ \\ \hline
+      28 & NTIの尖度 & $\mathcal{SQ}_{NTI}$ \\ \hline
+      29 & NTIの歪度 & $\mathcal{K}_{NTI}$ \\ \hline
+      30 & NTIのエネルギー & $\mathcal{P}_{NTI}$ \\ \hline
+      31 & NTIのEntoropy Based Index & $EBI_{NTI}$ \\ \hline
+      32 & NTIの最頻値 & $\mathcal{M}_{NTI}$ \\ \hline
+      33 & NTIの中央値 & $\mathcal{Q}_{NTI}$ \\ \hline
+      34 & NTIのヒストグラムの分散 & ${\mathcal{V}}^h_{NTI}h$ \\ \hline
+      35 & NTIのヒストグラムの累積の傾き & ${\mathcal{A}}^h_{NTI}$ \\ \hline  
+    \end{tabular}
+  \end{center}
+\end{table}
+
+\begin{table}[p]
+  \begin{center} \caption{SDWから得られる特徴量}
+    \begin{tabular}{|l|c|c|} \hline
+      No. & 特徴量 & 記号 \\ \hline \hline
+      36 & SDWの平均 & $\overline{SDW}$ \\ \hline
+      37 & SDWの分散 & $\mathcal{V}_{SDW}$ \\ \hline
+      38 & SDWの標準偏差 & $SD_{SDW}$ \\ \hline
+      39 & SDWの累積の傾き & $\mathcal{A}_{SDW}$ \\ \hline
+      40 & SDWの尖度 & $\mathcal{SQ}_{SDW}$ \\ \hline
+      41 & SDWの歪度 & $\mathcal{K}_{SDW}$ \\ \hline
+      42 & SDWのエネルギー & $\mathcal{P}_{SDW}$ \\ \hline
+      43 & SDWのEntoropy Based Index & $EBI_{SDW}$ \\ \hline
+      44 & SDWの最頻値 & $\mathcal{M}_{SDW}$ \\ \hline
+      45 & SDWの中央値 & $\mathcal{Q}_{SDW}$ \\ \hline
+      46 & SDWのヒストグラムの分散 & ${\mathcal{V}}^h_{SDW}$ \\ \hline
+      47 & SDWのヒストグラムの累積の傾き & ${\mathcal{A}}^h_{SDW}$ \\ \hline  
+    \end{tabular}
+  \end{center}
+\end{table}
+
+\begin{table}[p]
+  \begin{center} \caption{スカログラムから得られる特徴量}
+    \begin{tabular}{|l|c|c|} \hline
+      No. & 特徴量 & 記号 \\ \hline \hline
+      48 & エネルギー比率$(\alpha = 0, \beta = 5.8)$ & $\mathcal{H}_{0,5.8}$ \\ \hline
+      49 & NSIとのピーク周波数との差の二乗平均 & $\epsilon^r$ \\ \hline
+      50 & 周波数による重みづけ & $\mathcal{S}^w$ \\ \hline
+      51 & スカログラムの時間$k$におけるエネルギーの総和の最大値 & $P_{NNSM}$ \\ \hline
+      52 & スカログラムにARモデルを用いたSPP & $SPP$ \\ \hline
+    \end{tabular}
+  \end{center}
+\end{table}
+
+\begin{table}[p]
+  \begin{center} \caption{ポアンカレプロットによる$l_i$から得られる特徴量}
+    \begin{tabular}{|l|c|c|} \hline
+      No. & 特徴量 & 記号 \\ \hline \hline
+      53 & $l_i$の平均 & $\overline{l_i}$ \\ \hline
+      54 & $l_i$の分散 & $\mathcal{V}_{l_i}$ \\ \hline
+      55 & $l_i$の累積の傾き & $\mathcal{A}_{l_i}$ \\ \hline
+      56 & $l_i$の標準偏差 & $SD_{l_i}$ \\ \hline
+      57 & $l_i$の尖度 & $\mathcal{SQ}_{l_i}$ \\ \hline
+      58 & $l_i$の歪度 & $\mathcal{K}_{l_i}$ \\ \hline
+      59 & $l_i$のエネルギー & $\mathcal{P}_{l_i}$ \\ \hline
+      60 & $l_i$のEntoropy Based Index & $EBI_{l_i}$ \\ \hline
+      61 & $l_i$の最頻値 & $\mathcal{M}_{l_i}$ \\ \hline
+      62 & $l_i$の中央値 & $\mathcal{Q}_{l_i}$ \\ \hline
+      63 & $l_i$のヒストグラムの分散 & ${\mathcal{V}}^h_{l_i}$ \\ \hline
+      64 & $l_i$のヒストグラムの累積の傾き & ${\mathcal{A}}^h_{l_i}$ \\ \hline  
+    \end{tabular}
+  \end{center}
+\end{table}
+
+\begin{table}[p]
+  \begin{center} \caption{$\mathcal{S}_e$から得られる特徴量}
+    \begin{tabular}{|l|c|c|} \hline
+      No. & 特徴量 & 記号 \\ \hline \hline
+      65 & $\mathcal{S}_e$の平均 & $\overline{\mathcal{S}_e}$ \\ \hline
+      66 & $\mathcal{S}_e$の分散 & $\mathcal{V}_{\mathcal{S}_e}$ \\ \hline
+      67 & $\mathcal{S}_e$の標準偏差 & $SD_{\mathcal{S}_e}$ \\ \hline
+      68 & $\mathcal{S}_e$の累積の傾き & $\mathcal{A}_{\mathcal{S}_e}$ \\ \hline
+      69 & $\mathcal{S}_e$の尖度 & $\mathcal{SQ}_{\mathcal{S}_e}$ \\ \hline
+      70 & $\mathcal{S}_e$の歪度 & $\mathcal{K}_{\mathcal{S}_e}$ \\ \hline
+      71 & $\mathcal{S}_e$のエネルギー & $\mathcal{P}_{\mathcal{S}_e}$ \\ \hline
+      72 & $\mathcal{S}_e$のEntoropy Based Index & $EBI_{\mathcal{S}_e}$ \\ \hline
+      73 & $\mathcal{S}_e$の最頻値 & $\mathcal{M}_{\mathcal{S}_e}$ \\ \hline
+      74 & $\mathcal{S}_e$の中央値 & $\mathcal{Q}_{\mathcal{S}_e}$ \\ \hline
+      75 & $\mathcal{S}_e$のヒストグラムの分散 & ${\mathcal{V}}^h_{\mathcal{S}_e}$ \\ \hline
+      76 & $\mathcal{S}_e$のヒストグラムの累積の傾き & ${\mathcal{A}}^h_{\mathcal{S}_e}$ \\ \hline  
+    \end{tabular}
+  \end{center}
+\end{table}
+
+\begin{table}[p]
+  \begin{center} \caption{$\mathcal{R}_e$から得られる特徴量}
+    \begin{tabular}{|l|c|c|} \hline
+      No. & 特徴量 & 記号 \\ \hline \hline
+      77 & $\mathcal{R}_e$の平均 & $\overline{\mathcal{R}_e}$ \\ \hline
+      78 & $\mathcal{R}_e$の分散 & $\mathcal{V}_{\mathcal{R}_e}$ \\ \hline
+      79 & $\mathcal{R}_e$の標準偏差 & $SD_{\mathcal{R}_e}$ \\ \hline
+      80 & $\mathcal{R}_e$の累積の傾き & $\mathcal{A}_{\mathcal{R}_e}$ \\ \hline
+      81 & $\mathcal{R}_e$の尖度 & $\mathcal{SQ}_{\mathcal{R}_e}$ \\ \hline
+      82 & $\mathcal{R}_e$の歪度 & $\mathcal{K}_{\mathcal{R}_e}$ \\ \hline
+      83 & $\mathcal{R}_e$のエネルギー & $\mathcal{P}_{\mathcal{R}_e}$ \\ \hline
+      84 & $\mathcal{R}_e$のEntoropy Based Index & $EBI_{\mathcal{R}_e}$ \\ \hline
+      85 & $\mathcal{R}_e$の最頻値 & $\mathcal{M}_{\mathcal{R}_e}$ \\ \hline
+      86 & $\mathcal{R}_e$の中央値 & $\mathcal{Q}_{\mathcal{R}_e}$ \\ \hline
+      87 & $\mathcal{R}_e$のヒストグラムの分散 & ${\mathcal{V}}^h_{\mathcal{R}_e}$ \\ \hline
+      88 & $\mathcal{R}_e$のヒストグラムの累積の傾き & ${\mathcal{A}}^h_{\mathcal{R}_e}$ \\ \hline  
+    \end{tabular}
+  \end{center}
+\end{table}
+
+\begin{table}[p]
+  \begin{center} \caption{$NSI_{pdo}$から得られる特徴量}
+    \begin{tabular}{|l|c|c|} \hline
+      No. & 特徴量 & 記号 \\ \hline \hline
+      89 & $NSI_{pdo}$の平均 & $\overline{NSI_{pdo}}$ \\ \hline
+      90 & $NSI_{pdo}$の分散 & $\mathcal{V}_{NSI_{pdo}}$ \\ \hline
+      91 & $NSI_{pdo}$の標準偏差 & $SD_{NSI_{pdo}}$ \\ \hline
+      92 & $NSI_{pdo}$の累積の傾き & $\mathcal{A}_{NSI_{pdo}}$ \\ \hline
+      93 & $NSI_{pdo}$の尖度 & $\mathcal{SQ}_{NSI_{pdo}}$ \\ \hline
+      94 & $NSI_{pdo}$の歪度 & $\mathcal{K}_{NSI_{pdo}}$ \\ \hline
+      95 & $NSI_{pdo}$のエネルギー & $\mathcal{P}_{NSI_{pdo}}$ \\ \hline
+      96 & $NSI_{pdo}$のEntoropy Based Index & $EBI_{NSI_{pdo}}$ \\ \hline
+      97 & $NSI_{pdo}$の最頻値 & $\mathcal{M}_{NSI_{pdo}}$ \\ \hline
+      98 & $NSI_{pdo}$の中央値 & $\mathcal{Q}_{NSI_{pdo}}$ \\ \hline
+      99 & $NSI_{pdo}$のヒストグラムの分散 & ${\mathcal{V}}^h_{NSI_{pdo}}$ \\ \hline
+      100 & $NSI_{pdo}$のヒストグラムの累積の傾き & ${\mathcal{A}}^h_{NSI_{pdo}}$ \\ \hline  
+    \end{tabular}
+  \end{center}
+\end{table}
+
+\begin{table}[p]
+  \begin{center} \caption{$NTI_{pdo}$から得られる特徴量}
+    \begin{tabular}{|l|c|c|} \hline
+      No. & 特徴量 & 記号 \\ \hline \hline
+      101 & $NTI_{pdo}$の平均 & $\overline{NTI_{pdo}}$ \\ \hline
+      102 & $NTI_{pdo}$の分散 & $\mathcal{V}_{NTI_{pdo}}$ \\ \hline
+      103 & $NTI_{pdo}$の標準偏差 & $SD_{NTI_{pdo}}$ \\ \hline
+      104 & $NTI_{pdo}$の累積の傾き & $\mathcal{A}_{NTI_{pdo}}$ \\ \hline
+      105 & $NTI_{pdo}$の尖度 & $\mathcal{SQ}_{NTI_{pdo}}$ \\ \hline
+      106 & $NTI_{pdo}$の歪度 & $\mathcal{K}_{NTI_{pdo}}$ \\ \hline
+      107 & $NTI_{pdo}$のエネルギー & $\mathcal{P}_{NTI_{pdo}}$ \\ \hline
+      108 & $NTI_{pdo}$のEntoropy Based Index & $EBI_{NTI_{pdo}}$ \\ \hline
+      109 & $NTI_{pdo}$の最頻値 & $\mathcal{M}_{NTI_{pdo}}$ \\ \hline
+      110 & $NTI_{pdo}$の中央値 & $\mathcal{Q}_{NTI_{pdo}}$ \\ \hline
+      111 & $NTI_{pdo}$のヒストグラムの分散 & ${\mathcal{V}}^h_{NTI_{pdo}}$ \\ \hline
+      112 & $NTI_{pdo}$のヒストグラムの累積の傾き & ${\mathcal{A}}^h_{NTI_{pdo}}$ \\ \hline  
+    \end{tabular}
+  \end{center}
+\end{table}
+
+\begin{table}[p]
+  \begin{center} \caption{$SDW_{pdo}$から得られる特徴量}
+    \begin{tabular}{|l|c|c|} \hline
+      No. & 特徴量 & 記号 \\ \hline \hline
+      113 & $SDW_{pdo}$の平均 & $\overline{SDW_{pdo}}$ \\ \hline
+      114 & $SDW_{pdo}$の分散 & $\mathcal{V}_{SDW_{pdo}}$ \\ \hline
+      115 & $SDW_{pdo}$の標準偏差 & $SD_{SDW_{pdo}}$ \\ \hline
+      116 & $SDW_{pdo}$の累積の傾き & $\mathcal{A}_{SDW_{pdo}}$ \\ \hline
+      117 & $SDW_{pdo}$の尖度 & $\mathcal{SQ}_{SDW_{pdo}}$ \\ \hline
+      118 & $SDW_{pdo}$の歪度 & $\mathcal{K}_{SDW_{pdo}}$ \\ \hline
+      119 & $SDW_{pdo}$のエネルギー & $\mathcal{P}_{SDW_{pdo}}$ \\ \hline
+      120 & $SDW_{pdo}$のEntoropy Based Index & $EBI_{SDW_{pdo}}$ \\ \hline
+      121 & $SDW_{pdo}$の最頻値 & $\mathcal{M}_{SDW_{pdo}}$ \\ \hline
+      122 & $SDW_{pdo}$の中央値 & $\mathcal{Q}_{SDW_{pdo}}$ \\ \hline
+      123 & $SDW_{pdo}$のヒストグラムの分散 & ${\mathcal{V}}^h_{SDW_{pdo}}$ \\ \hline
+      124 & $SDW_{pdo}$のヒストグラムの累積の傾き & ${\mathcal{A}}^h_{SDW_{pdo}}$ \\ \hline  
+    \end{tabular}
+  \end{center}
+\end{table}
+
+\begin{table}[p]
+  \begin{center} \caption{疑似微分作用素のスカログラムから得られる特徴量}
+    \begin{tabular}{|l|c|c|} \hline
+      No. & 特徴量 & 記号 \\ \hline \hline
+      125 & エネルギー比率$(\alpha = 0, \beta = 5.8)$ & ${\mathcal{H}_{pdo}}_{0,5.8}$ \\ \hline
+      126 & NSIとのピーク周波数との差の二乗平均 & $\epsilon_{pdo}^r$ \\ \hline
+      127 & 周波数による重みづけ & $\mathcal{S}_{pdo}^w$ \\ \hline
+      128 & スカログラムの時間$k$におけるエネルギーの総和の最大値 & ${P_{pdo}}_{NNSM}$ \\ \hline
+    \end{tabular}
+  \end{center}
+\end{table}
+
+\newpage
+\begin{table}[p]
+  \begin{center} \caption{${\mathcal{S}_e}_{pdo}$から得られる特徴量}
+    \begin{tabular}{|l|c|c|} \hline
+      No. & 特徴量 & 記号 \\ \hline \hline
+      129 & ${\mathcal{S}_e}_{pdo}$の平均 & $\overline{{\mathcal{S}_e}_{pdo}}$ \\ \hline
+      130 & ${\mathcal{S}_e}_{pdo}$の分散 & $\mathcal{V}_{{\mathcal{S}_e}_{pdo}}$ \\ \hline
+      131 & ${\mathcal{S}_e}_{pdo}$の標準偏差 & $SD_{{\mathcal{S}_e}_{pdo}}$ \\ \hline
+      132 & ${\mathcal{S}_e}_{pdo}$の累積の傾き & $\mathcal{A}_{{\mathcal{S}_e}_{pdo}}$ \\ \hline
+      133 & ${\mathcal{S}_e}_{pdo}$の尖度 & $\mathcal{SQ}_{{\mathcal{S}_e}_{pdo}}$ \\ \hline
+      134 & ${\mathcal{S}_e}_{pdo}$の歪度 & $\mathcal{K}_{{\mathcal{S}_e}_{pdo}}$ \\ \hline
+      135 & ${\mathcal{S}_e}_{pdo}$のエネルギー & $\mathcal{P}_{{\mathcal{S}_e}_{pdo}}$ \\ \hline
+      136 & ${\mathcal{S}_e}_{pdo}$のEntoropy Based Index & $EBI_{{\mathcal{S}_e}_{pdo}}$ \\ \hline
+      137 & ${\mathcal{S}_e}_{pdo}$の最頻値 & $\mathcal{M}_{{\mathcal{S}_e}_{pdo}}$ \\ \hline
+      138 & ${\mathcal{S}_e}_{pdo}$の中央値 & $\mathcal{Q}_{{\mathcal{S}_e}_{pdo}}$ \\ \hline
+      139 & ${\mathcal{S}_e}_{pdo}$のヒストグラムの分散 & ${\mathcal{V}}^h_{{\mathcal{S}_e}_{pdo}}$ \\ \hline
+      140 & ${\mathcal{S}_e}_{pdo}$のヒストグラムの累積の傾き & ${\mathcal{A}}^h_{{\mathcal{S}_e}_{pdo}}$ \\ \hline  
+    \end{tabular}
+  \end{center}
+\end{table}
+
+
+\begin{table}[!t]
+  \begin{center} \caption{${\mathcal{R}_e}_{pdo}$から得られる特徴量}
+    \begin{tabular}{|l|c|c|} \hline
+      No. & 特徴量 & 記号 \\ \hline \hline
+      141 & ${\mathcal{R}_e}_{pdo}$の平均 & $\overline{{\mathcal{R}_e}_{pdo}}$ \\ \hline
+      142 & ${\mathcal{R}_e}_{pdo}$の分散 & $\mathcal{V}_{{\mathcal{R}_e}_{pdo}}$ \\ \hline
+      143 & ${\mathcal{R}_e}_{pdo}$の標準偏差 & $SD_{{\mathcal{R}_e}_{pdo}}$ \\ \hline
+      144 & ${\mathcal{R}_e}_{pdo}$の累積の傾き & $\mathcal{A}_{{\mathcal{R}_e}_{pdo}}$ \\ \hline
+      145 & ${\mathcal{R}_e}_{pdo}$の尖度 & $\mathcal{SQ}_{{\mathcal{R}_e}_{pdo}}$ \\ \hline
+      146 & ${\mathcal{R}_e}_{pdo}$の歪度 & $\mathcal{K}_{{\mathcal{R}_e}_{pdo}}$ \\ \hline
+      147 & ${\mathcal{R}_e}_{pdo}$のエネルギー & $\mathcal{P}_{{\mathcal{R}_e}_{pdo}}$ \\ \hline
+      148 & ${\mathcal{R}_e}_{pdo}$のEntoropy Based Index & $EBI_{{\mathcal{R}_e}_{pdo}}$ \\ \hline
+      149 & ${\mathcal{R}_e}_{pdo}$の最頻値 & $\mathcal{M}_{{\mathcal{R}_e}_{pdo}}$ \\ \hline
+      150 & ${\mathcal{R}_e}_{pdo}$の中央値 & $\mathcal{Q}_{{\mathcal{R}_e}_{pdo}}$ \\ \hline
+      151 & ${\mathcal{R}_e}_{pdo}$のヒストグラムの分散 & ${\mathcal{V}}^h_{{\mathcal{R}_e}_{pdo}}$ \\ \hline
+      152 & ${\mathcal{R}_e}_{pdo}$のヒストグラムの累積の傾き & ${\mathcal{A}}^h_{{\mathcal{R}_e}_{pdo}}$ \\ \hline  
+    \end{tabular}
+  \end{center}
+\end{table}
+
+\clearpage

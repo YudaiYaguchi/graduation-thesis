@@ -1,0 +1,90 @@
+\newpage
+
+\section{予測に有効な特徴量の選択}
+3章で抽出された心電図波形やポアンカレプロット解析から得られる24種，また通常のウェーブレット変換から得られる特徴量64種に加え，疑似微分作用を用いたウェーブレット変換によって得られる特徴量64種，
+合計152種の特徴量すべてを考慮して組み合わせを考えることは，計算量が指数関数的に増加するため非現実的である．そのため，本研究では予測に有効な特徴量を絞り込むために
+ピアソンの$\chi^2$検定(Pearson's chi-square test)を用いる．
+
+\subsection{$\chi^2$検定}
+本章では，ピアソンの$\chi^2$検定について説明する．
+$\chi^2$検定とは独立性の検定であり，2つのクラス間に関連があるか否かを判断するためのものである．
+本来はカテゴリカルデータに対して行うものであるが，連続的な特徴量についてもビン化(離散化)することで有効となる．
+帰無仮説$H_0$と対立仮説$H_1$は以下の通りとなり，帰無仮説を棄却することで，特徴量が除細動"成功"と"失敗"に関係性があるといえる\cite{chi}．
+表\ref{tab:chi}に特徴量とクラスの分割表を示す．
+
+\[
+\left\{
+\begin{array}{l}
+  H_0 : \text{特徴量間は独立している(分割表の行と列は独立している)} \\
+  H_1 : \text{特徴量間は関連している(分割表の行と列は独立していない)}
+\end{array}
+\right.
+\]
+
+\begin{table}[h]
+  \begin{center} \caption{分割表} 
+    \label{tab:chi}
+    \begin{tabular}{|c|c|c|c|c|} \hline
+      & 1$\sim$51 & 52$\sim$102 & 103$\sim$152 & 行和[個] \\ \hline \hline
+      成功 & $C_{1,1}$ & $C_{1,2}$ & $C_{1,3}$ & $C_{.1}$\\ \hline
+      失敗 & $C_{2,1}$ & $C_{2,2}$ & $C_{2,3}$ & $C_{.2}$\\ \hline
+      列和 & $C_{1,.}$ & $C_{2,.}$ & $C_{3,.}$ & $C_{.,.}$\\ \hline
+    \end{tabular}
+  \end{center}
+\end{table}
+
+ここで$C_{i,j}$は観測値であり，表\ref{tab:chi}の行がクラス，列は特徴量の分割数を表す．
+この表を基に$\chi^2$検定を行う．本研究における推定値は次式で求める．
+\begin{eqnarray}
+  E_{ij} = n\Big(\frac{C_i}{n}\Big)\Big(\frac{C_j}{n}\Big) = \frac{C_iC_j}{n} \label{f:E}
+\end{eqnarray}
+ここで，$n$は総データ数を示し観測値に対する$\chi^2$検定は次式で定義される．
+\begin{eqnarray}
+  {\chi}^2 \triangleq \sum_{i=1}^{r}\sum_{j=1}^{c}\frac{(C_{ij}-E{ij})^2}{E_{ij}} \label{f:chi}
+\end{eqnarray}
+
+データの平方和における$r$を総行数，$c$を総列数とすると，自由度$(r-1)\cdot(c-1)$の$\chi^2$分布に従うことが知られており，$\chi^2$検定で検定統計量を導出できる．この$\chi^2$検定の結果より，
+帰無仮説が棄却される有意水準である$p$値$(0{\leq}p\leq1)$を求め，$p$値が事前に定められた有意水準より下回る場合，帰無仮説は棄却される．
+本研究では次式でスコアを定義し，このとき，$p$値と自然対数(底$e$)を用いて評価することによって特徴量の選択を行う．
+\begin{equation}
+  Score = -\text{log}(p\text{-value}) \label{f:p-val}
+\end{equation}
+
+本研究では，$p$値を0.05と設定し$Score=3.00$を上回る特徴量を採用する．
+
+\subsection{選択された特徴量}
+図\ref{fig:chi}に$\chi^2$検定の結果を示す．ここで横軸は表2$\sim$15の各特徴量，縦軸は$Score$を表す．
+また表\ref{tab:re-chi}に選択された特徴量とその記号を示す．
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.7]{figure/Kai_result.png}
+  \caption{${\chi}^2$検定結果 \label{fig:chi}}
+\end{figure}
+
+\begin{table}[h]
+  \begin{center} \caption{${\chi}^2$検定を用いて選択した特徴量 \label{tab:re-chi}}
+    \begin{tabular}{|l|c|c|c|} \hline
+      No. & 特徴量 & 記号 & $Score$ \\ \hline \hline
+      127 & 周波数による重みづけ& $\mathcal{S}_{pdo}^p$ & 6.54 \\ \hline
+      92 & $NSI_{pdo}$の累積の傾き & $\mathcal{A}_{NSI_{pdo}}$ & 6.32\\ \hline
+      31 & NTIのEntoropy Based Index & $EBI_{NTI}$ & 5.25\\ \hline
+      24 & NTIの平均 & $\overline{NTI}$ & 5.22 \\ \hline
+      30 & NTIのエネルギー & $\mathcal{P}_{NTI}$ & 5.22 \\ \hline
+      34 & NTIのヒストグラムの分散 & ${\mathcal{V}}^h_{NTI}$ &5.22 \\ \hline
+      22 & NSIのヒストグラムの分散 & ${\mathcal{V}}^h_{NSI}$ & 4.93 \\ \hline
+      35 & NTIのヒストグラムの累積の傾き & ${\mathcal{A}}^h_{NTI}$ & 4.82 \\ \hline
+      86 & ReEnの中央値 & $\mathcal{Q}_{\mathcal{R}_e}$ & 4.32 \\ \hline
+      28 & NTIの尖度 & $\mathcal{SQ}_{NTI}$ & 4.07 \\ \hline
+      33 & NTIの中央値 & $\mathcal{Q}_{NTI}$ & 4.07 \\ \hline
+      48 & エネルギー比率 & $\mathcal{H}_{0,5.8}$ & 3.79 \\ \hline
+      123 & $SDW_{pdo}$のヒストグラムの分散 & ${\mathcal{V}}^h_{SDW_{pdo}}$ & 3.50 \\ \hline
+      52 & スカルグラムにARモデルを用いたSPP & $SPP$ & 3.50 \\ \hline
+      94 & $NSI_{pdo}$の歪度& $\mathcal{K}_{NSI_{pdo}}$ & 3.50 \\ \hline
+      16 & NSIの尖度 & $\mathcal{SQ}_{NSI}$ & 3.22 \\ \hline
+      88 & ReEnのヒストグラムの累積の傾き & ${\mathcal{A}}^h_{\mathcal{R}_e}$ & 3.22 \\ \hline
+      82 & ReEnの歪度 &  $\mathcal{K}_{\mathcal{R}_e}$ & 3.10\\ \hline
+    \end{tabular}
+  \end{center}
+\end{table}
+
+\clearpage
