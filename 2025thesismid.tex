@@ -1,0 +1,349 @@
+% _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+% _/    情報科学科 卒業研究
+% _/    中間発表 予稿 フォーマット
+% _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+\documentclass[a4j,fleqn,10pt,twocolumn]{jarticle}
+\usepackage[dvipdfmx]{graphicx}
+\usepackage{subcaption}
+\renewcommand{\thesubfigure}{\arabic{subfigure}} 
+\usepackage{bmpsize}% put after graphicx
+\usepackage{here}
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{titlesec}
+\usepackage{titling}
+%
+\makeatletter%
+%
+\setlength\intextsep{0pt}
+\setlength\textfloatsep{0pt}
+\setlength\textheight{48\baselineskip}
+\setlength\textwidth{52zw}
+\setlength\topmargin{-2.0truecm}
+\setlength\oddsidemargin{-.77truecm}
+\setlength\evensidemargin{\oddsidemargin}
+\setlength{\droptitle}{-1cm}
+\renewcommand\normalsize{\fontsize{9pt}{11pt}\selectfont}
+\linespread{1.0}\selectfont
+\titlespacing{\section}{0pt}{*2.0}{*0.5}
+\titlespacing{\subsection}{0pt}{*0.8}{*0.}
+\titlespacing{\subsubsection}{0pt}{*0.8}{*0.}
+%
+\makeatother%
+%
+% \pagestyle{empty}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ヘッダ．
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\title{%
+\fontsize{16pt}{14pt}\selectfont
+加速度推定機能を組み込んだポテンシャル法による
+\\動的障害物回避手法の構築
+}%
+
+\author{%
+2221103 矢口 雄大
+}%
+
+\date{%
+自動制御研究室 指導教員: 大屋 英稔 教授， 星 義克 講師
+}%
+
+
+\maketitle
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 本文．
+%XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX%
+\section{研究背景と研究目的}
+%XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX%
+\begin{align}
+  (x(t)，\, y(t))，(x(t+\Delta t)，\, y(t+\Delta t)) \\
+  (x(t+\Delta t),\, y(t+\Delta t)) \\
+  \Delta t　\\
+  \Delta T　\\\\
+  ob_v(t) = ((x(t)+\Delta t - x(t))，\, (y(t)+\Delta t - y(t))) \\
+\end{align}  
+\begin{equation}
+  ob_v(t) = 
+  \left( \frac{x(t+\Delta t) - x(t)}{\Delta T},\;
+         \frac{y(t+\Delta t) - y(t)}{\Delta T} \right)
+\end{equation}
+\begin{equation}
+  ob_v(t) = 
+  \left( \frac{x(t+\Delta t) - x(t)}{\Delta t},\;
+         \frac{y(t+\Delta t) - y(t)}{\Delta t} \right)
+\end{equation}
+  
+%******************************%
+%******************************%
+\subsection{研究背景}
+\label{sec:introduction}
+%******************************%
+近年，自動走行ロボットの研究が盛んに行われている．
+特に物流業界 では自動配送ロボットの実用化に向けた開発や法律の改正等が行われている\cite{meti_robot}．これにより，
+トラック運転手の長時間労働是正や物流分野の人手不足の緩和が期待される．
+
+自動配送ロボットの社会実装には未知環境での安全な経路生成が不可欠であり，
+その手法の一つとして大局的経路計画やポテンシャル法が知られている．
+大局的経路計画は算出された経路が曲がり角などで障害物に近づきすぎてしまう問題がある\cite{idou}．
+ポテンシャル法は計算量が少ないシンプルなアルゴリズムのためリアルタイム性が優れている手法である．
+ポテンシャル法とは目的地から引力，障害物から斥力をそれぞれ受けるポテンシャル場を設定し，ロボットがポテンシャル場の勾配に従って移動することで目的地へ到達させる手法である．図1にポテンシャル場の例を示す．
+しかし，ポテンシャル法には停留という問題がある．
+障害物の斥力と目的地の引力が釣り合い，勾配が限りなく0に近い状態に陥り目的地にたどり着けなくなる問題である．
+
+従来研究\cite{hriaoka,koike}では，ポテンシャル場の勾配ベクトルに沿ってロボットを移動させることが考えられている．
+特に従来研究\cite{koike}では，停留した際に障害物の向こう側に仮ゴールをA*探索法を用いて設定することで，「停留問題」を解決することに成功しており，静的障害物の回避に有効であることが示されている．
+さらに，壁沿い走行に加えて回り込み走行を組み込むことで，より柔軟に停留を回避する手法も提案されている．
+一方，従来研究\cite{enokida}では，ポテンシャル法に速度推定機能を組み込むことで，動的障害物の回避に成功している．
+この手法により，障害物の速度や進行方向を考慮した経路生成が可能となり，従来の静的障害物に対する回避手法を発展させる形で，動的環境下における自律移動の実現が図られている．
+しかしながら，これらの手法は人間のような柔軟かつ合理的な判断に基づく回避行動を実現しておらず，
+状況によっては非効率な経路選択や不自然な回避動作が生じる可能性がある．
+また，障害物の位置座標が取得可能であることを前提としているが，実環境ではセンサ精度や視認性の制約により常に正確な位置情報を得られるとは限らない．
+加えて，対象空間が2次元に限定されているため，複雑な3次元環境への適用には追加の工夫を要する．
+障害物の座標情報が取得できない状況では，ポテンシャル法の特性上，適切な回避が困難となる可能性がある．
+
+以上のことから，より実環境に即したセンサ情報の取り扱いや不確実性を考慮した，
+人間に近い判断能力を備えた動的障害物回避手法の実現が現在も求められる．
+
+
+\vspace{10pt} % 図の前にスペースを入れる\begin{figure}[htbp]
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=8cm]{potential.png}
+  \setlength{\abovecaptionskip}{5pt} % キャプション上
+  \setlength{\belowcaptionskip}{5pt} % キャプション下
+  \caption{ポテンシャル場の例\cite{enokida}}
+  \label{fig:potential}
+\end{figure}
+
+
+%******************************%
+\subsection{研究目的}
+\label{sec:goal}
+%******************************%
+% 本研究では，従来研究\cite{enokida}で提案されたポテンシャル法を基礎とし，ロボットにLiDARセンサを組み込むことによって，
+% 未知もしくは不確実な環境下においてもより高精度に周辺障害物を検出し，動的および静的障害物の両方に対し，
+% 2次元だけでなく3次元空間における回避動作を実現する柔軟な経路生成手法を提案する．
+% 特に，ロボットの走行状況や周辺情報を踏まえ，従来の壁沿い走行にLiDARセンサを組み合わせ，
+% より安全かつ自然で効率的な回避動作を実現を目指す．
+% また，LiDARセンサが取得する3次元データを活用し，立体的に配置された障害物に対しても適応的に対応できる回避手法を構築する．
+% さらに，シミュレーションを通じて，提案手法の有効性を検証する．
+
+本研究では，従来のポテンシャル法を基盤とし，動的障害物への対応能力向上を目指す．
+従来の先行研究\cite{enokida}は，非現実的なセンサ情報に依存し，速度のみの予測では現実の複雑な動きに対応できない課題があった．
+これに対し，本研究ではLiDARセンサで取得した点群データから障害物の速度と加速度を推定し，将来位置を高精度に予測する．
+これにより，従来の速度のみを用いる手法よりも，ジグザグに進む歩行者や加減速する車両など，多様な動きに対応した安全かつ効率的な回避を実現する．
+さらに，LiDARセンサの計測誤差が処理に与える影響を考慮することで，不確実な環境下でも処理のロバスト性を高める．
+シミュレーションを通じて，提案手法の有効性を検証する．
+
+% 従来研究\cite{enokida}は，障害物の4つの頂点位置を前提とする非現実的なセンサ情報に依存し，
+% 速度のみによる予測では現実の多様な動きに対応できない課題があった．
+% このためれに対し，本研究ではLiDARセンサで取得した点群データから障害物の代表点を算出し，
+% その座標その座標に基づいて速度と加速度を考慮した将来位置予測を行う．
+% これにより，ジグザグに移動する歩行者や速度変化を伴う車両など，
+% 複雑な動きを伴う動的障害物に対しても，従来の速度のみを用いる手法に比べて高精度な回避を実現する．
+
+% さらに，LiDARセンサの計測誤差が障害物の位置推定や速度・加速度の算出に与える影響を考慮し，処理のロバスト性を高める．
+% これにより，未知または不確実な環境下においても，より安全で効率的な経路生成を目指す．シミュレーションを通じて，
+% 提案手法の有効性を検証する．
+
+
+%XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX%
+\section{研究の進捗}
+%XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX%
+
+
+\subsection{ポテンシャル法}
+従来研究\cite{enokida}では，障害物から発生する斥力ポテンシャル場，目的地から発生する引力ポテンシャル場，および全体のポテンシャル場を次式のように定めている．
+
+\begin{flushleft} 
+\begin{itemize}
+  \item 障害物座標の斥力ポテンシャル関数 $P_{ob}(x_r， y_r)$
+  \begin{equation}
+    P_{ob}(x_r， y_r) \triangleq \frac{1}{\sqrt{(x_r - x_{ob})^2 + (y_r - y_{ob})^2}}
+  \end{equation}
+
+  \item 目的地座標の引力ポテンシャル関数 $P_{ds}(x_r， y_r)$
+  \begin{equation}
+    P_{ds}(x_r， y_r) \triangleq - \frac{1}{\sqrt{(x_r - x_{ds})^2 + (y_r - y_{ds})^2}}
+  \end{equation}
+
+  \item 全体のポテンシャル場 $P(x_r， y_r)$
+  \begin{equation}
+    P(x_r， y_r) \triangleq \sum \omega_{ob} P_{ob} + \omega_{ds} P_{ds}
+  \end{equation}
+\end{itemize}
+\end{flushleft}
+
+\begin{tabular}{ll}
+  $(x_r， y_r)$           & ロボットの座標 \\
+  $(x_{ob}， y_{ob})$     & 障害物の座標\\
+  $(x_{ds}， y_{ds})$     & 目的地の座標\\
+  $P_d(x_r，y_r)$         & 引力ポテンシャル関数の重み \\
+  $P_o(x_r，y_r)$         & 斥力ポテンシャル関数の重み \\
+\end{tabular}
+
+\vspace{1em} % 段落間のスペースを調整
+
+式 (1)～(3) より，$x$ 方向の勾配を式 (4)，$y$ 方向の勾配を式 (5)，全体の勾配を式 (6) に示す．
+
+\begin{flushleft} 
+\begin{equation}
+  \frac{\partial P(x_r，y_r)}{\partial x} = \sum \omega_o \frac{\partial P_{ob}(x_r，y_r)}{\partial x} + \omega_d \frac{\partial P_{ds}(x_r，y_r)}{\partial x}
+\end{equation}
+
+\begin{equation}
+  \frac{\partial P(x_r，y_r)}{\partial y} = \sum \omega_o \frac{\partial P_{ob}(x_r，y_r)}{\partial y} + \omega_d \frac{\partial P_{ds}(x_r，y_r)}{\partial y}
+\end{equation}
+
+\begin{equation}
+  \nabla p(x_r， y_r) \triangleq \left( \frac{\partial P(x_r，y_r)}{\partial x}， \frac{\partial P(x_r，y)}{\partial y} \right)
+\end{equation}
+\end{flushleft}
+
+
+
+\subsection{従来研究の検証}
+従来研究\cite{enokida}で提案されている手法について
+示し，シミュレーションによって有用性と問題点を示す．
+
+\label{sec:dynamic_obstacle}
+従来研究\cite{enokida}は，このポテンシャル法に速度推定機能を組み込むことで，動的障害物回避手法を提案している．
+以下に，従来研究\cite{enokida}で採用されている速度推定アルゴリズムについて示す.
+
+\begin{enumerate}
+    \item センサにより，$ob_m$を検出する．
+    \item $ob_m$から座標$(x_1， y_1)$を受け取る．
+    \item 1ステップ後の$ob_m$座標$(x_2， y_2)$を受け取る．
+    \item 速度$ob_v$を次式のように求める
+    \begin{equation}
+        ob_v = (x_2 - x_1， y_2 - y_1) \
+    \end{equation}
+    \item 求めた$ob_v$から，20ステップ後の障害物$ob_{m2}$の予測する．
+    \item 予測した$ob_{m2}$をポテンシャル場に組み込む．
+    \item 仮ゴールを設定し，そこに向かってポテンシャル法で進行する．
+    \item 仮ゴールに到着するか，30ステップ経過後にセンサが検知しなくなるまで 2〜6 を繰り返す．
+    \item 本来の目的地に向かって，ポテンシャル法で進行する．
+\end{enumerate}
+
+従来研究\cite{enokida}のシミュレーション結果を図\ref{fig:temporary_goal_1}に示す．
+図\ref{fig:temporary_goal_1}では，動的障害物が右方向へ移動している状況において，
+障害物をセンサが検出したときにその4つの頂点位置を取得できることを前提としている．
+この条件下で，ロボットは障害物を回避しつつ目的地に到達できていることが確認できる．
+しかしながら，経路は必ずしも最短とはならず，
+さらに実環境においては障害物が人や車両のように不規則な形状を持つ場合が多く，四隅の座標を正確に取得できるとは限らない．
+このため，従来手法は実環境への適用において前提条件が現実的でないという問題を抱えている．
+
+
+% \begin{figure}[htbp]
+%   \centering
+%   \includegraphics[height=5cm]{temporary_goal_1_v3.png}
+%   \setlength{\abovecaptionskip}{5pt} % キャプション上
+%   \setlength{\belowcaptionskip}{5pt} % キャプション下
+%   \caption{仮ゴール設定箇所}
+%   \label{fig:temporary_goal_1}
+% \end{figure}
+
+
+\vspace{1em} % 段落間のスペースを調整
+\vspace{1em} % 段落間のスペースを調整
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[height=5cm]{kabezoi_v2.png}
+  \setlength{\abovecaptionskip}{5pt} % キャプション上
+  \setlength{\belowcaptionskip}{5pt} % キャプション下
+  \caption{動的障害物の回避}
+  \label{fig:temporary_goal_1}
+\end{figure}
+
+\vspace{1em} % 段落間のスペースを調整
+
+\begin{figure}[htbp]
+  \begin{minipage}{0.48\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{2D_LiDAR_normal.png}
+    \caption{ロボットの目的地までの移動シミュレーション}
+    \label{fig:lidar_normal}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.48\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{2D_LiDAR_time_distance.png}
+    \caption{LiDARセンサによる目的地までの距離の変化の記録}
+    \label{fig:lidar_time_distance}
+  \end{minipage}
+\end{figure}
+
+% \subsubsection{仮ゴールの設定}
+% \label{sec:temporary_goal}
+% 仮ゴールの位置は求めた加速度 $ob_a$ とLiDARセンサで取得した障害物の座標から求める．
+% この二つから障害物を予測し，障害物の進行方向に対して $180^{\circ}$ 回転させた場所に仮ゴールを設定する(図\ref{fig:temporary_goal_1})．
+
+
+\section{提案手法と研究計画}
+\label{sec:proposed_method}
+LiDARセンサを用いたシミュレーションの結果を図\ref{fig:lidar_normal}に示す．
+ロボットは障害物を逐次検出し，ポテンシャル法に基づいて経路を生成することで，目的地まで到達できていることが確認できる．
+また，図\ref{fig:lidar_time_distance}は移動中のロボットと目的地との距離の推移を示しており，
+ロボットが安定して目的地へ収束していることが確認できる．
+
+
+従来研究\cite{enokida}では，動的障害物をセンサが検出した際に，障害物の4つの頂点位置を取得できることを前提としていた．
+本提案手法では，LiDARセンサが取得した点群データから障害物の代表点を算出し，その座標に基づいて速度を推定するとともに，加速度を考慮した将来位置の予測を行う．
+これにより，ジグザグに移動する歩行者や速度変化を伴う車両など，
+実環境における多様な動きに対しても，従来の速度のみを用いる手法に比べてより高精度な回避が可能となる．
+さらに，LiDARセンサを用いることで障害物を高精度に検出できる一方，計測に伴う誤差も避けられないため，
+本手法ではこのセンサ誤差が障害物の位置推定や速度・加速度の算出に与える影響を考慮して処理を行う．
+
+
+
+% 今後の計画としては従来研究\cite{enokida}では，動的障害物をセンサが検出した際に，障害物の4つの頂点位置を取得できることを前提としていた．
+% 本提案手法では，LiDARが取得した点群データから障害物の代表点を算出し，その座標に基づいて速度を推定するとともに，
+% 加速度を考慮した将来位置の予測を行う．これにより，ジグザグに移動する歩行者や速度変化を伴う車両など，
+% 現実環境における多様な動きに対しても，従来の速度のみを用いる手法に比べてより高精度な回避が可能となる．
+% また，LiDARセンサの使用により，センサ誤差の影響を抑えつつ障害物を高精度で検出できる．
+% また，LiDARセンサは3次元空間での障害物検出が可能であるため，将来的には3次元回避手法の実現も視野に入れる．
+
+
+
+今後の研究計画としては，LiDARセンサで取得した点群データから障害物の代表点を算出し，
+その座標に基づいて速度および加速度を推定することで，将来位置を高精度に予測する．
+これにより，ジグザグ移動や速度変化を伴う動的障害物に対しても，
+従来手法より高精度な回避を実現を目指す．
+さらに，センサ誤差の影響を考慮した障害物検出や，3次元空間における回避手法の実現を視野に入れて研究を進める予定である．
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%参考文献．
+%
+%\bibliographystyle{ipsjunsrt}
+%\bibliography{bib}
+\begin{thebibliography}{99}
+%
+%------%
+%
+\bibitem{meti_robot} 経済産業省，自動配送ロボットの将来像を取りまとめました
+\url{https://www.meti.go.jp/press/2024/02/20250226002/20250226002.html}
+%
+\bibitem{idou}青柳 誠司, 佐藤 伸仁, 山本 恭輝, 高橋 智一, 鈴木 昌人, "移動ロボットの移動
+障害物回避に関するファジィルールの学習 ポテンシャル法, 強化学習法との比較,"
+システム制御情報学会論文誌, vol. 34, no. 8, pp. 209–218, 2021.
+
+\bibitem{hriaoka} 平岡 翔，”ポテンシャル法における停留問題の回避，および効率的な経路生成手法”，東京都市大学2022年度卒業論文(2022)
+%
+\bibitem{koike} 小池 基也，”A*探索法を組み込んだ静止障害物に対するポテンシャル法の回避方法”，東京都市大学2023年度卒業論文(2023)
+%------%
+%
+\bibitem{enokida} 榎田 日和，”速度推定機能を組み込んだポテンシャル法による動的障害物の回避”，東京都市大学2024年度卒業論文(2024)
+%------%
+%------%
+%
+\end{thebibliography}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+\end{document}
+%
