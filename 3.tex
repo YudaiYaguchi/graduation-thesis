@@ -1,96 +1,99 @@
 \newpage
 \section{提案手法}
-
-\subsection{クロソイド曲線}
-クロソイド曲線は曲率を一定に変化させて描かれた曲線である(図\ref{fig:clothoid})．また，クロソイド曲線には次式のような，曲線長$L$と曲率半径$R_{clo}$の積が一定になるという性質がある．ここで$A$はクロソイドパラメータである．
-\begin{equation}
-  LR_{clo}= A^2
-\end{equation}
-原点を$(0,0)$としたとき，クロソイドの曲線上のある点の座標$P(x，y)$は次式のように表される．
-\begin{equation}
-x = \frac{A}{\sqrt{2}}\int_0^\theta \frac{\cos\theta}{\sqrt{\theta}}d\theta
-\end{equation}
-\begin{equation}
-y = \frac{A}{\sqrt{2}}\int_0^\theta \frac{\sin\theta}{\sqrt{\theta}}d\theta
-\end{equation}
-
-ここで$\theta$は接線角である．
-
-\begin{figure}[htbp]
-  
-    \centering
-    \includegraphics[width=.5\linewidth]{figure/clothoid.png}
-    \caption{クロソイド曲線}
-    \label{fig:clothoid}
-\end{figure}
-
-\subsection{シグモイド関数}
-シグモイド関数とは図\ref{fig:sigmoid}のように表される関数あり，$y=0$と$y=k$に漸近線をもち，次式のように表される関数である．
-\begin{equation}
-f(x)=\frac{k}{1+e^{-a x}}
-\end{equation}
-ここで$k$と$a$の値を定める必要がある．
-$k$は車両の現在位置と駐車開始位置の$y$軸方向のずれの値である．このように$k$を設定することで，$y=0$と$y=k$に漸近線をもつようなシグモイド関数になる． 
-次に，$a$を設定する際にはシグモイド関数の曲率半径の最小値が最小回転半径よりも大きくなるような条件を満たす必要がある．すなわち，次式に示すシグモイド関数の曲率半径$R_{sig}$を求める式の最小値が最小回転半径$R$よりも大きければよい．
-\begin{equation}
-R_{sig}=\frac{(1+f'(x)^2)^\frac{3}{2}}{\left| f''(x) \right|}
-\end{equation}
-\begin{equation}
-  R < R_{sig}
-\end{equation}
-また，$a$の値が大きいほど経路が短くなるので，(6)(7)式を満たす範囲で$a$を大きく設定する．
-
-\begin{figure}[htbp]
- 
-    \centering
-    \includegraphics[width=.7\linewidth]{figure/sigmoid.png}
-    \caption{シグモイド関数($a=5,k=1$)}
-    \label{fig:sigmoid} 
-\end{figure}
-
-\subsection{経路計画の手法}
-本論文では，クロソイド曲線とシグモイド関数を用いて，円弧と直線の間に緩和曲線を導入し，滑らかな経路を生成することを目的としている．ここで，緩和曲線とは，直線から円弧に進入するときのステアリング角の急な変化を防ぐ曲線で，連続的に曲率が変化するため滑らかな経路の生成が期待できる．本研究では，図\ref{fig:map} に示すマップの赤い四角の駐車開始位置から青い四角の駐車目標位置までの経路を生成することを考える．ただし，車両が障害物に接近した場合，切り返しを行う必要があるが，切り返し時には緩和曲線は必要ないため，本論文では切り返しを考慮しない．本論文で提案する経路計画手法では，駐車目標位置から駐車開始位置へ逆向き（Backward）に経路計画を行うことによって，駐車開始位置から駐車目標位置までの経路を生成する．提案する経路計画は次のような手順で行われる．図\ref{fig:STEP1} ～\ref{fig:STEP2-2} に提案する経路計画の手順を示す．
-\begin{figure}[htbp]
- 
-    \centering
-    \includegraphics[width=1\linewidth]{figure/map.png}
-    \caption{対象とする環境}
-    \label{fig:map} 
-\end{figure}
-
-\begin{figure}[htbp]
- 
-    \centering
-    \includegraphics[width=0.7\linewidth]{figure/restep1.png}
-    \caption{STEP1}
-    \label{fig:STEP1}
-
-\end{figure}
-\subsubsection*{STEP1}
-まず，従来手法\cite{ogata}のSTEP4-1までと同様に，障害物と車両左前の距離が$\delta_2$以上で曲がれるまで経路を生成する．このとき，駐車開始位置の車両後輪軸中心の座標が道路の中心よりも上側か下側かを判別する．上側もしくは道路の中心ならSTEP2-1へ，下側ならSTEP2-2へ移行する(図\ref{fig:STEP1})．
-
-\subsubsection*{STEP2(STEP2-1，STEP2-2)}
-
-(STEP2-1)図\ref{fig:STEP2-1}のように，駐車開始位置を始点として車両の現在位置に向かってクロソイド曲線を用いて経路を生成する．クロソイドパラメータ$A$の値を大きくしていき，現在位置の車両後輪軸の中心の座標とクロソイド曲線の終端の座標が一致したときのクロソイドパラメータ$A$の値を用いてクロソイド曲線に基づく経路を生成する．
-
-(STEP2-2)従来手法\cite{ogata}のSTEP4-1で求めた最小回転半径上を姿勢角が$0$になるまで前進した後，図\ref{fig:STEP2-2} に示すように現在位置から駐車開始位置に向かうようなシグモイド関数で経路生成を行う．このとき，(5)，(6)式の$k$と$a$の値を定める必要がある．$k$は現在位置と駐車開始位置の車両後輪軸中心の$y$軸方向のずれの値である．ここで，$k$が定まったので
-(6)式からシグモイド関数の最小の曲率半径$R_{sig}$を求める．$a$の値を小さくしていき，$R_{sig}$の最小値が最小回転半径$R$より大きくなった時の$a$の値に決定する．定めた$k$と$a$を代入した(5)式に従って経路を生成する．
-\subsubsection*{STEP3}
-それぞれのSTEPで生成した経路を逆から辿ると駐車経路になる．
-
-\begin{figure}[btp]
-   \begin{minipage}[b]{.5\linewidth}
-    \centering
-    \includegraphics[width=1.2\linewidth]{figure/restep2.png}
-    \caption{STEP2-1}
-    \label{fig:STEP2-1}     
-  \end{minipage}  
-  \begin{minipage}[b]{.5\linewidth}    
-    \centering
-    \includegraphics[width=1.2\linewidth]{figure/restep2-2.png}
-    \caption{STEP2-2}
-    \label{fig:STEP2-2} 
-  \end{minipage}
-\end{figure}
+従来研究\cite{kasuyama}～\cite{koike}では，静的障害物のみを対象としており，動的に移動する障害物については十分に考慮されていない．
+また，従来研究\cite{enokida}では動的障害物の回避を扱っているものの，対象としているのは等速運動を行う障害物であり，
+加速度を伴う障害物に対しては適切な経路生成が困難であるという課題が残っている．
+そこで本研究では，センサにより検知した動的障害物の情報からその速度および加速度を推定し，
+複数秒先の将来位置を予測する手法を提案する．
+さらに，予測した将来位置をポテンシャル場に反映させることで，加速度を持つ動的障害物に対しても，
+ポテンシャル法に基づくスムーズで効率的な回避挙動を実現することを目指す．
+加えて，本研究の手法を従来研究\cite{kasuyama}の静的障害物回避アルゴリズムへ組み込むことにより，
+動的障害物と静的障害物の双方に対応可能な回避手法を構築する．
+なお，動的障害物をセンサが検知した際には，その四隅の位置情報を取得できるものとする．
 
 
+\subsection{動的障害の回避}
+\subsubsection{動的障害物の将来位置予測}
+
+本研究では，動的障害物 $ob_m$ の将来位置を推定するために，
+センサで取得した障害物の四隅の位置情報を用いて重心位置を算出し，
+その時刻における代表位置とする．
+続いて，連続する観測データから速度および加速度を推定し，
+等加速度直線運動モデルに基づいて複数秒先の位置を予測する．
+以下に，動的障害物の将来位置予測の手順を示す．
+
+\begin{enumerate}
+  \item センサによって動的障害物 $ob_m$ の四隅の座標を取得し，
+        その重心位置 $\mathbf{p}_{t}$ を次式のように求める．
+        \begin{equation}
+            \mathbf{p}_{t} = (x_{1}, y_{1}), \quad
+            \mathbf{p}_{t-\Delta t} = (x_{2}, y_{2})
+        \end{equation}
+
+  \item 重心位置の変化量から速度ベクトル $\mathbf{v}$ を推定する．
+      \begin{equation}
+            \mathbf{v} = (x_{v}, y_{v})
+            = \frac{\mathbf{p}_{t} - \mathbf{p}_{t-\Delta t}}{\Delta t}
+      \end{equation}
+
+  \item さらに速度の変化量に基づき，加速度ベクトル $\mathbf{a}$ を推定する．
+      \begin{equation}
+            \mathbf{a} = (x_{a}, y_{a})
+            = \frac{\mathbf{v}_{t} - \mathbf{v}_{t-\Delta t}}{\Delta t}
+      \end{equation}
+
+  \item 推定した速度・加速度と現在位置 $\mathbf{p}_t$ を用いて，
+        等加速度直線運動モデル
+        \begin{equation}
+          \label{eq:acc_model}
+            \mathbf{p}(T)
+            = \mathbf{p}_t + \mathbf{v}T + \frac{1}{2}\mathbf{a}T^2
+        \end{equation}
+        により，予測ステップ数 $T$ を変化させながら複数秒先の将来位置を逐次算出する．
+
+  \item 加速度が閾値を上回る場合には $T = 20$，  
+        等速運動に近い場合には $T = 50$ ステップの予測区間を採用する．
+        このように $T$ を動的に切り替えることで，障害物の運動特性に応じた将来位置推定が可能となる．
+
+  \item 推定された将来位置群をポテンシャル場に反映し，  
+        ロボットはこれらを基に動的障害物を考慮した回避軌道を生成する．
+\end{enumerate}
+
+\subsubsection{センサ距離の設定}
+従来研究\cite{enokida}は，動的障害物に対する検知距離を 200[cm] に設定している．
+しかし，同研究で想定されている障害物は等速運動を前提としており，
+速度変化を伴う動的障害物には十分に対応できないという問題がある．
+特に，加速度を有する障害物は短時間で接近速度が大きく変化するため，200[cm] 程度の検知距離では回避動作の開始が遅れる可能性が高い．
+本研究では，この課題を解消するため，センサの検知距離を 300[cm] に設定した．
+検知範囲を拡大することで，障害物をより早期に捉え，
+その速度および加速度を推定するために必要な複数回の観測データを安定して取得できる．
+これにより，障害物が加速しながら接近する場合でも将来位置の予測精度を維持でき，
+衝突リスクを低減しつつ適切な回避経路を生成するための十分な時間的余裕を確保できる．
+
+\subsection{提案手法アルゴリズム}
+提案手法の全体フローを以下に示す．
+
+\begin{algorithm}
+\caption{目的地までの経路生成アルゴリズム}
+\begin{algorithmic}
+
+\WHILE{目的地に到達していない}
+  \STATE センサで周囲の障害物を検出する
+  \FOR{各検出対象 $ob_m$}
+    \STATE 四隅の座標から重心位置 $\mathbf{p}_t$ を算出する
+    \IF{$ob_m$ が動的障害物である場合}
+      \STATE 連続する観測から速度 $\mathbf{v}$ と加速度 $\mathbf{a}$ を推定する
+      \FOR{$\tau = 1 \dots T$}
+        \STATE 等加速度直線運動モデル（式\ref{eq:acc_model}）により将来位置を算出する
+      \ENDFOR
+      \STATE 予測位置群を斥力ポテンシャルとしてポテンシャル場へ反映する
+    \ELSIF{$ob_m$ が静的障害物である場合}
+      \STATE 従来手法\cite{kasuyama} の静的障害物回避アルゴリズムを適用する
+    \ENDIF
+  \ENDFOR
+
+  \STATE ポテンシャル場（目的地からの引力＋障害物由来の（予測位置含む））を構築する
+  \STATE ポテンシャル場の勾配に基づき，ロボットを移動させる
+\ENDWHILE
+\end{algorithmic}
+\end{algorithm}
