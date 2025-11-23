@@ -73,43 +73,37 @@ $x$ 方向，$y$ 方向における勾配は次式のように求められる．
 地点$(x_r， y_r)$にいるロボットは，式(\ref{eq:gradient})で表される勾配ベクトルに従って移動することで，目的地へと向かう．
 
 
-\subsection{従来研究\cite{kasuyama}の壁沿い走行}
+\subsection{従来研究\cite{kasuyama}}
 \subsubsection{制御対象のロボット}
 
-従来研究\cite{kasuyama}で使用する制御対象は，図\ref{fig:control-target}に示すようなロボットである．
-センサは前，左斜め前，右斜め前，左，右の合計5をつ搭載しており，障害物を検知するとその位置座標を取得できる．
-センサの検知距離は70[cm]としている．一方，従来研究\cite{enokida}では，検知対象が動的障害物である場合に，センサの検知距離を200[cm]に拡張している．
-しかし，同研究で想定されている障害物は等速運動を行うものであり，加速度を有する障害物は考慮されていない．
-本研究では，加速度を持つ動的障害物を対象とするため，センサの検知距離を300[cm]に設定した．
-これにより，障害物をより早い段階で，かつより遠距離で検知することが可能となる．
-その結果，障害物が加速して接近する場合においても，その加速度を推定し，将来位置をより正確に予測するための時間的余裕を確保できる．
-
-
 \vspace{10pt} % 図の前にスペースを入れる\begin{figure}[htbp]
-\begin{figure}[t!]
-  \centering
-  % --- 左側の図 ---
-  \begin{minipage}[t]{0.48\linewidth}
-    \centering
-    \includegraphics[width=\linewidth]{figure/control-target.png}
-    \caption{制御対象のロボット}
-    \label{fig:control-target}
-  \end{minipage}
-  \hfill
-  % --- 右側の図 ---
-  \begin{minipage}[t]{0.48\linewidth}
-    \centering
-    \includegraphics[width=\linewidth]{figure/predicted-line.png}
-    \caption{予測線分}
-    \label{fig:predicted-line}
-  \end{minipage}
+\begin{figure}[t!]  \centering
+  \includegraphics[width=.4\linewidth]{figure/control-target.png}
+  \caption{制御対象のロボット}
+  \label{fig:control-target}
+  \setlength{\abovecaptionskip}{5pt} % キャプション上
+  \setlength{\belowcaptionskip}{5pt} % キャプション下
 \end{figure}
+
+従来研究\cite{kasuyama}で使用する制御対象は，図\ref{fig:control-target}に示すようなロボットである．
+センサは前，左斜め前，右斜め前，左，右の合計5つを搭載しており，障害物を検知するとその位置座標を取得できる．
+センサの検知距離は70[cm]としている．一方，従来研究\cite{enokida}では，検知対象が動的障害物である場合に，センサの検知距離を200[cm]に拡張している．
+しかし，同研究で想定されている障害物は等速運動を行うものであり，加速度運動を行う障害物は考慮されていない．
+本研究では，加速度を持つ動的障害物を対象とするため，センサの検知距離を300[cm]に設定した．
+これによって，障害物をより遠距離で検知することが可能となる．
+すなわち，障害物が加速して接近する場合においても，その加速度を推定し，将来位置をより正確に予測するための時間的余裕を確保できる．
+
+\begin{equation}
+  \theta = \tan^{-1} \frac{a - b}{1 + ab}
+  \label{eq:theta}
+\end{equation}
+
 
 \subsubsection{障害物の予測と壁沿い走行}
 ロボットに搭載された5つのセンサのうち，2つが同時に障害物を検出した場合，その2点を結ぶ直線の傾きを算出し，
 その傾きを基に障害物の進行方向を示す予測線分を生成する．この予測線分に沿うようにして，ロボットは壁沿いの走行を行う．
 一方で，1つのセンサのみが障害物を検知した場合には，ロボットを10[cm]ずつ，合計30[cm]前進させる処理を行う．
-その後も2つのセンサによって障害物が捉えられない場合には，ポテンシャル法に基づき目標地点へ向けた走行に切り替える．
+前進した後も2つのセンサによって障害物が捉えられない場合には，ポテンシャル法に基づき目標地点へ向けた走行に切り替える．
 また，壁沿い走行を行う際の進行方向は，障害物の予測線分とロボットの現在地点から目標地点へ向かう線分の角度関係を用いて決定する．
 図\ref{fig:predicted-line}では，障害物の予測線分を $Ob$，現在地点と目標地点を結ぶ線分を $Ta$ として表している．
 これら2つが成す角度 $\theta$ は，$Ob$ の傾き $a$ と $Ta$ の傾き $b$ を用いて次式で求められる．
@@ -118,15 +112,14 @@ $x$ 方向，$y$ 方向における勾配は次式のように求められる．
   \theta = \tan^{-1} \frac{a - b}{1 + ab}
   \label{eq:theta}
 \end{equation}
-
-
-
-\subsubsection{障害物の裏側への回り込み走行}
-従来研究\cite{hiraoka}では，壁沿い走行を行った後，斥力ポテンシャル場の影響によって障害物に対して大きく膨らんだ軌道が形成されてしまう場合がある．
-これに対し，従来研究\cite{kasuyama}では障害物の後方へ回り込むような走行を取り入れることで，
-より効率的な経路生成が可能となった．
-図\ref{fig:potential}に示すように，この回り込み走行は，壁沿い走行を終えたロボットが障害物との一定距離を保ちながら円弧状に移動することで実現される．
-その後，ロボットは目的地へ向けてポテンシャル法に基づいた走行を行い，回り込んだ先で再び障害物を検知した場合には，図4のように再度壁沿い走行へ移行し，障害物回避を継続する仕組みとなっている．
+\vspace{10pt} % 図の前にスペースを入れる\begin{figure}[htbp]
+\begin{figure}[t!]  \centering
+  \includegraphics[width=.4\linewidth]{figure/predicted-line.png}
+  \caption{予測線分}
+  \label{fig:predicted-line}
+  \setlength{\abovecaptionskip}{5pt} % キャプション上
+  \setlength{\belowcaptionskip}{5pt} % キャプション下
+\end{figure}
 
 \vspace{10pt} % 図の前にスペースを入れる\begin{figure}[htbp]
 \begin{figure}[t!]  \centering
@@ -134,16 +127,24 @@ $x$ 方向，$y$ 方向における勾配は次式のように求められる．
   \setlength{\abovecaptionskip}{5pt} % キャプション上
   \setlength{\belowcaptionskip}{5pt} % キャプション下
   \caption{回り込み走行中に障害物を検知した場合}
-  \label{fig:potential}
+  \label{fig:around-obstacle-detection}
 \end{figure}
 
+\subsubsection{障害物の裏側への回り込み走行}
+従来研究\cite{kasuyama}では，壁沿い走行を行った後，斥力ポテンシャル場の影響によって障害物に対して大きく膨らんだ軌道が形成されてしまう場合がある．
+これに対し，従来研究\cite{hiraoka}では障害物の後方へ回り込むような走行を取り入れることで，
+より効率的な経路生成が可能となった．
+図\ref{fig:around-obstacle-detection}に示すように，この回り込み走行は，壁沿い走行を終えたロボットが障害物との一定距離を保ちながら円弧状に移動することで実現される．
+その後，ロボットは目的地へ向けてポテンシャル法に基づいた走行を行い，回り込んだ先で再び障害物を検知した場合には，図4のように再度壁沿い走行へ移行し，障害物回避を継続する仕組みとなっている．
+
+\subsection{従来研究\cite{hiraoka}}
 \subsubsection{障害物のパラメータの設定}
-従来研究\cite{hiraoka}では，ロボットが壁沿い走行によって障害物を回避した後であっても，
+従来研究\cite{kasuyama}では，ロボットが壁沿い走行によって障害物を回避した後であっても，
 依然としてその障害物を認識し続けてしまうため，斥力ポテンシャル場が更新されず，
 結果として大きく回り道となる経路を辿ってしまうことがある．
 図\ref{fig:before-weight-params}に示すように，重みパラメータ調整前の経路では，ロボットが障害物の背後へ回り込んだ後，
 すでに目的地方向に向いている状況であっても，障害物からの影響を受け続けてしまっている．
-こうした問題に対し，従来研究\cite{kasuyama}では，障害物の重要度を表す重みパラメータを調整することで，
+こうした問題に対し，従来研究\cite{hiraoka}では，障害物の重要度を表す重みパラメータを調整することで，
 より安全かつ効率的な経路生成を実現する手法を提案している．
 図\ref{fig:before-weight-params}, \ref{fig:after-weight-params}では，前，右斜め前，右センサが
 障害物を検知した際の様子をそれぞれ $\times$, $\square$, $*$ として示している．
@@ -158,7 +159,7 @@ $x$ 方向，$y$ 方向における勾配は次式のように求められる．
   \begin{minipage}[t]{0.48\linewidth}
     \centering
     \includegraphics[width=\linewidth]{figure/before-weight-params.png}
-    \caption{重みパラメータ変更前の経路}
+    \caption{重みパラメータ変更前の経路\cite{hiraoka}}
     \label{fig:before-weight-params}
   \end{minipage}
   \hfill
@@ -166,7 +167,7 @@ $x$ 方向，$y$ 方向における勾配は次式のように求められる．
   \begin{minipage}[t]{0.48\linewidth}
     \centering
     \includegraphics[width=\linewidth]{figure/after-weight-params.png}
-    \caption{重みパラメータ変更後の経路}
+    \caption{重みパラメータ変更後の経路\cite{hiraoka}}
     \label{fig:after-weight-params}
   \end{minipage}
 \end{figure}
