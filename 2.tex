@@ -77,14 +77,25 @@ $x$ 方向および $y$ 方向の勾配成分は以下のように算出され�
 \subsection{従来研究\cite{kasuyama}}
 \subsubsection{制御対象のロボット}
 
-\vspace{10pt} % 図の前にスペースを入れる\begin{figure}[htbp]
-\begin{figure}[t!]  \centering
-  \includegraphics[width=.4\linewidth]{figure/control-target.png}
-  \caption{制御対象のロボット}
-  \label{fig:control-target}
-  \setlength{\abovecaptionskip}{5pt} % キャプション上
-  \setlength{\belowcaptionskip}{5pt} % キャプション下
+\begin{figure}[t!]
+  \centering
+
+  \begin{minipage}[t]{0.45\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{figure/control-target-v2.png}
+    \caption{制御対象のロボット}
+    \label{fig:control-target}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[t]{0.45\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{figure/predicted-line-v2.png}
+    \caption{予測線分}
+    \label{fig:predicted-line}
+  \end{minipage}
+
 \end{figure}
+
 
 従来研究\cite{kasuyama}で使用する制御対象は，図\ref{fig:control-target}に示すようなロボットである．
 センサは前，左斜め前，右斜め前，左，右の合計5つを搭載しており，障害物を検知するとその位置座標を取得できる．
@@ -93,11 +104,6 @@ $x$ 方向および $y$ 方向の勾配成分は以下のように算出され�
 本研究では，加速度を持つ動的障害物を対象とするため，センサの検知距離を300[cm]に設定した．
 これによって，障害物をより遠距離で検知することが可能となる．
 すなわち，障害物が加速して接近する場合においても，その加速度を推定し，将来位置をより正確に予測するための時間的余裕を確保できる．
-
-\begin{equation}
-  \theta = \tan^{-1} \frac{a - b}{1 + ab}
-  \label{eq:theta}
-\end{equation}
 
 
 \subsubsection{障害物の予測と壁沿い走行}
@@ -113,14 +119,15 @@ $x$ 方向および $y$ 方向の勾配成分は以下のように算出され�
   \theta = \tan^{-1} \frac{a - b}{1 + ab}
   \label{eq:theta}
 \end{equation}
-\vspace{10pt} % 図の前にスペースを入れる\begin{figure}[htbp]
-\begin{figure}[t!]  \centering
-  \includegraphics[width=.4\linewidth]{figure/predicted-line.png}
-  \caption{予測線分}
-  \label{fig:predicted-line}
-  \setlength{\abovecaptionskip}{5pt} % キャプション上
-  \setlength{\belowcaptionskip}{5pt} % キャプション下
-\end{figure}
+
+
+\subsection{従来研究\cite{hiraoka}}
+\subsubsection{障害物の裏側への回り込み走行}
+従来研究\cite{kasuyama}では，壁沿い走行を行った後，斥力ポテンシャル場の影響によって障害物に対して大きく膨らんだ軌道が形成されてしまう場合がある．
+これに対し，従来研究\cite{hiraoka}では障害物の後方へ回り込むような走行を取り入れることで，
+より効率的な経路生成が可能となった．
+図\ref{fig:around-obstacle-detection}に示すように，この回り込み走行は，壁沿い走行を終えたロボットが障害物との一定距離を保ちながら円弧状に移動することで実現される．
+その後，ロボットは目的地へ向けてポテンシャル法に基づいた走行を行い，回り込んだ先で再び障害物を検知した場合には，図4のように再度壁沿い走行へ移行し，障害物回避を継続する仕組みとなっている．
 
 \vspace{10pt} % 図の前にスペースを入れる\begin{figure}[htbp]
 \begin{figure}[t!]  \centering
@@ -131,14 +138,6 @@ $x$ 方向および $y$ 方向の勾配成分は以下のように算出され�
   \label{fig:around-obstacle-detection}
 \end{figure}
 
-\subsubsection{障害物の裏側への回り込み走行}
-従来研究\cite{kasuyama}では，壁沿い走行を行った後，斥力ポテンシャル場の影響によって障害物に対して大きく膨らんだ軌道が形成されてしまう場合がある．
-これに対し，従来研究\cite{hiraoka}では障害物の後方へ回り込むような走行を取り入れることで，
-より効率的な経路生成が可能となった．
-図\ref{fig:around-obstacle-detection}に示すように，この回り込み走行は，壁沿い走行を終えたロボットが障害物との一定距離を保ちながら円弧状に移動することで実現される．
-その後，ロボットは目的地へ向けてポテンシャル法に基づいた走行を行い，回り込んだ先で再び障害物を検知した場合には，図4のように再度壁沿い走行へ移行し，障害物回避を継続する仕組みとなっている．
-
-\subsection{従来研究\cite{hiraoka}}
 \subsubsection{障害物のパラメータの設定}
 従来研究\cite{kasuyama}では，ロボットが壁沿い走行によって障害物を回避した後であっても，
 依然としてその障害物を認識し続けてしまうため，斥力ポテンシャル場が更新されず，
@@ -172,3 +171,56 @@ $x$ 方向および $y$ 方向の勾配成分は以下のように算出され�
     \label{fig:after-weight-params}
   \end{minipage}
 \end{figure}
+
+
+
+
+\subsection{従来研究\cite{enokida}}
+\subsubsection{速度推定と動的障害物の予測}
+従来研究\cite{enokida}では，ポテンシャル法に速度推定機能を組み込むことで，動的障害物の回避手法を提案している．
+以下に，従来研究\cite{enokida}で採用されている速度推定アルゴリズムについて示す.
+動的障害物を$ob_m$，速度を$(x_{v}，y_{v})$とする．
+また$(x_1， y_1)$，$(x_2， y_2)$は障害物の左下の座標を表す．
+
+
+\begin{enumerate}
+  \item センサにより，$ob_m$を検出する．
+  \item $ob_m$から座標$(x_1， y_1)$を受け取る．
+  \item 1ステップ後の$ob_m$座標$(x_2， y_2)$を受け取る．
+  \item 速度$ob_v$を次式のように求める
+  \begin{equation}
+      ob_v = (x_2 - x_1， y_2 - y_1) \
+  \end{equation}
+  \item 求めた$ob_v$から，20ステップ後の障害物$ob_{m2}$の予測する．
+  \item 予測した$ob_{m2}$をポテンシャル場に組み込む．
+  \item 仮ゴールを設定し，そこに向かってポテンシャル法で進行する．
+  \item 仮ゴールに到着するか，30ステップ経過後にセンサが検知しなくなるまで 2〜6 を繰り返す．
+  \item 本来の目的地に向かって，ポテンシャル法で進行する．
+\end{enumerate}
+
+
+\subsubsection{仮ゴールの設定}
+取得した障害物の座標および速度から100ステップ前の障害物位置を予測し，その予測位置を中心として仮ゴールを配置する(図\ref{fig:temp-goal-1})．
+ロボットの現在位置と目的地を結ぶ線分を$T_a$，障害物$ob_{m}$と$ob_{m2}$を結ぶ線分を$O_p$とし，これらのなす角を$\theta$とする．
+なす角$\theta$が極めて小さい場合や，障害物の進行方向が直進に近い場合には障害物の進行方向に対して$90^\circ$回転させた方向へ仮ゴールを設定する(図\ref{fig:temp-goal-2})．
+% さらに，障害物の速度ベクトルの符号に基づき，仮ゴールを右側に配置するか左側に配置するかを決定する．
+
+\begin{figure}[t!]
+  \centering
+  % --- 左側の図 ---
+  \begin{minipage}[t]{0.48\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{figure/temp-goal-1.png}
+    \caption{通常の仮ゴール設定箇所}
+    \label{fig:temp-goal-1}
+  \end{minipage}
+  \hfill
+  % --- 右側の図 ---
+  \begin{minipage}[t]{0.48\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{figure/temp-goal-2.png}
+    \caption{$Ta$と$Op$のなす角が0の場合の仮ゴールの設定箇所\cite{enokida}}
+    \label{fig:temp-goal-2}
+  \end{minipage}
+\end{figure}
+
