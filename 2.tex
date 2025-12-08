@@ -27,15 +27,15 @@
   $(x_r， y_r)$           & ロボットの座標 \\
   $(x_{ob}， y_{ob})$     & 障害物の座標\\
   $(x_{ds}， y_{ds})$     & 目的地の座標\\
-  $P_d(x_r，y_r)$         & 引力ポテンシャル関数の重み \\
-  $P_o(x_r，y_r)$         & 斥力ポテンシャル関数の重み \\
+  $P_{ds}(x_r，y_r)$         & 引力ポテンシャル関数の重み \\
+  $P_{ob}(x_r，y_r)$         & 斥力ポテンシャル関数の重み \\
 \end{tabular}
 
 \vspace{1em} % 段落間のスペースを調整
 
 ここで，$(x_r， y_r)$ はロボットの現在位置を，$(x_{ob}， y_{ob})$ および $(x_{ds}， y_{ds})$ はそれぞれ障害物と目的地の位置を表す．
 式(\ref{eq:total-potential})の $\omega_{ob}$ と $\omega_{ds}$ は，ともに正の実数である重み付けパラメータであり，
-それぞれ斥力ポテンシャル関数 $P_o(x_r， y_r)$ と引力ポテンシャル関数 $P_d(x_r， y_r)$ に対する重みとして機能する．
+それぞれ斥力ポテンシャル関数 $P_{ob}(x_r， y_r)$ と引力ポテンシャル関数 $P_{ds}(x_r， y_r)$ に対する重みとして機能する．
 なお，$\omega_{ob}$ を過度に大きくすると，障害物からの斥力の作用が強くなり，
 目的地への到達が困難になる恐れがあるため，$\omega_{ob} < \omega_{ds}$ に設定する必要がある．
 ロボットが移動する方向は，ポテンシャル場の勾配ベクトルによって規定され，
@@ -74,20 +74,19 @@ $x$ 方向および $y$ 方向の勾配成分は以下のように算出され�
 地点$(x_r， y_r)$にいるロボットは，式(\ref{eq:gradient})で表される勾配ベクトルに従って移動することで，目的地へと向かう．
 
 
-\subsection{従来研究\cite{kasuyama}}
 \subsubsection{制御対象のロボット}
 
 \begin{figure}[t!]
   \centering
 
-  \begin{minipage}[t]{0.45\linewidth}
+  \begin{minipage}[t]{0.40\linewidth}
     \centering
     \includegraphics[width=\linewidth]{figure/control-target-v2.png}
     \caption{制御対象のロボット}
     \label{fig:control-target}
   \end{minipage}
   \hfill
-  \begin{minipage}[t]{0.45\linewidth}
+  \begin{minipage}[t]{0.40\linewidth}
     \centering
     \includegraphics[width=\linewidth]{figure/predicted-line-v2.png}
     \caption{予測線分}
@@ -98,13 +97,14 @@ $x$ 方向および $y$ 方向の勾配成分は以下のように算出され�
 
 
 従来研究\cite{kasuyama}で使用する制御対象は，図\ref{fig:control-target}に示すようなロボットである．
-センサは前，左斜め前，右斜め前，左，右の合計5つを搭載しており，障害物を検知するとその位置座標を取得できる．
+センサは前($Rb_{2}$)，左斜め前($Rb_{1}$)，右斜め前($Rb_{3}$)，左($Rb_{4}$)，右($Rb_{5}$)の合計5つを搭載しており，障害物を検知するとその位置座標を取得できる．
 センサの検知距離は70[cm]としている．一方，従来研究\cite{enokida}では，検知対象が動的障害物である場合に，センサの検知距離を200[cm]に拡張している．
 しかし，同研究で想定されている障害物は等速運動を行うものであり，加速度運動を行う障害物は考慮されていない．
 本研究では，加速度を持つ動的障害物を対象とするため，センサの検知距離を300[cm]に設定した．
 これによって，障害物をより遠距離で検知することが可能となる．
 すなわち，障害物が加速して接近する場合においても，その加速度を推定し，将来位置をより正確に予測するための時間的余裕を確保できる．
 
+\subsection{従来研究\cite{kasuyama}}
 
 \subsubsection{障害物の予測と壁沿い走行}
 ロボットに搭載された5つのセンサのうち，2つが同時に障害物を検出した場合，その2点を結ぶ直線の傾きを算出し，
@@ -130,8 +130,8 @@ $x$ 方向および $y$ 方向の勾配成分は以下のように算出され�
 その後，ロボットは目的地へ向けてポテンシャル法に基づいた走行を行い，回り込んだ先で再び障害物を検知した場合には，図4のように再度壁沿い走行へ移行し，障害物回避を継続する仕組みとなっている．
 
 \vspace{10pt} % 図の前にスペースを入れる\begin{figure}[htbp]
-\begin{figure}[t!]  \centering
-  \includegraphics[width=.4\linewidth]{figure/obstacle-detection-during-turn.png}
+\begin{figure}[b!]  \centering
+  \includegraphics[width=.9\linewidth]{figure/obstacle-detection-during-turn-v2.png}
   \setlength{\abovecaptionskip}{5pt} % キャプション上
   \setlength{\belowcaptionskip}{5pt} % キャプション下
   \caption{回り込み走行中に障害物を検知した場合}
