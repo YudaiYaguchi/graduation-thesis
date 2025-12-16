@@ -3,43 +3,43 @@
 \subsection{シミュレーション設定}
 加速度推定機能を組み込んだ提案手法，従来研究\cite{enokida}の速度推定機能を用いた手法，
 およびセンサベースのポテンシャル法の3つの手法についてシミュレーションを実施し，
-それぞれの性能を比較評価する．
+それぞれを比較する．
 センサベースのポテンシャル法では，ロボットに搭載されたセンサがその時点で検知した障害物の
-位置情報のみを用いてポテンシャル場を生成し，そのポテンシャル場の勾配に基づいてロボットを移動させる．
+位置座標のみを用いてポテンシャル場を生成し，そのポテンシャル場の勾配に基づいてロボットを移動させる．
 シミュレーションでは，動的障害物として縦2[m]$\times$横2[m]の大きさを有する障害物を設定した．
-また，ロボットの初期位置は青色の円，目標位置は赤色の円，ロボットの軌跡を青の実線で示す．
+また，ロボットの位置は青色の円，目標位置は赤色の円，ロボットの軌跡を青の実線で示す．
 
 \subsection{シミュレーション結果と考察}
 5つの異なる場面におけるシミュレーション結果を示す．
 各場面について，提案手法，従来研究\cite{enokida}，およびセンサベースのポテンシャル法の3手法の性能を比較する．
-評価指標には，目的地到達までに要したステップ数(到達時間[step])およびロボットが移動した総距離(経路長[m])を用いる．
+評価指標には，目的地到達までに要した秒数(到達時間[s])およびロボットが移動した総距離(経路長[m])を用いる．
 また，\textcircled{1}～\textcircled{4}は時間経過を示している．
   
 \subsubsection*{横方向に等加速で進行する障害物の回避}
 図\ref{fig:scene1}に横方向に等加速で進行する障害物の回避シミュレーション結果を示し，
 表\ref{tab:scene1}に各手法の到達時間と経路長の比較結果を示す．
-ここでは，初期速度は $(0.035, 0.000)$[m/step]，加速度は $(0.004, 0.000)$[m/step$^2$]に設定した．
+ここでは，初期速度は $(0.035，0.000)$[m/s]，加速度は $(0.004，0.000)$[m/s$^2$]に設定した．
 
 
 \begin{figure}[t]
   \centering
   \begin{subfigure}[b]{0.45\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{figure/scene1/suggestion.png}
+    \includegraphics[width=\textwidth]{figure/scene1/suggestion-v2.png}
     \caption{提案手法}
     \label{fig:scene1/suggestion}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.45\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{figure/scene1/enokida.png}
+    \includegraphics[width=\textwidth]{figure/scene1/enokida-v2.png}
     \caption{従来研究\cite{enokida}}
     \label{fig:scene1/enokida}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.45\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{figure/scene1/potential.png}
+    \includegraphics[width=\textwidth]{figure/scene1/potential-v2.png}
     \caption{センサベースのポテンシャル法}
     \label{fig:scene1/potential}
   \end{subfigure}
@@ -54,7 +54,7 @@
 \label{tab:scene1}
 \begin{tabular}{|l|c|c|}
 \hline
-手法 & 到達時間[step] & 経路長[m] \\
+手法 & 到達時間[s] & 経路長[m] \\
 \hline
 提案手法 & 113 & 13.56 \\
 \hline
@@ -71,16 +71,16 @@
 また，センサベースのポテンシャル法ではロボットが障害物の進行方向前方へ進入しようとする挙動が見られる(図\ref{fig:scene1}(\subref{fig:scene1/potential}))．
 その結果，ロボットは障害物の動きに影響され回避中に進行方向を複数回切り替える非効率な軌道を形成している．
 一方，提案手法では障害物の進行方向前方への進入を回避しつつスムーズな軌道で回避行動を行っている(図\ref{fig:scene1}(\subref{fig:scene1/suggestion}))．
-定量的な比較結果としては，提案手法は到達時間が113[step]，経路長が13.56[m]となり，従来研究\cite{enokida}と比較して到達時間が31[step]短縮され，経路長も3.72[m]短くなった．
-センサベースのポテンシャル法と比較しても，到達時間が7[step]，経路長が0.84[m]とそれぞれ改善されている．
+定量的な比較結果としては，提案手法は到達時間が113[s]，経路長が13.56[m]となり，従来研究\cite{enokida}と比較して到達時間が31[s]短縮され，経路長も3.72[m]短くなった．
+センサベースのポテンシャル法と比較しても，到達時間が7[s]，経路長が0.84[m]とそれぞれ改善されている．
 
 
 \newpage
 \subsubsection*{斜め方向に等加速で進行する障害物の回避}
 図\ref{fig:scene2}に斜め方向に等加速で進行する障害物の回避シミュレーション結果を示し，
 表\ref{tab:scene2}に各手法の到達時間と経路長の比較結果を示す．
-ここでは，障害物の初期速度は$(-0.035, -0.035)$[m/step]，
-加速度は$(-0.0030, -0.0015)$[m/step$^2$]に設定した．
+ここでは，障害物の初期速度は$(-0.035，-0.035)$[m/s]，
+加速度は$(-0.0030，-0.0015)$[m/s$^2$]に設定した．
 
 
 \begin{figure}[t]
@@ -88,21 +88,21 @@
 
   \begin{subfigure}[b]{0.45\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{figure/scene2/suggestion.png}
+    \includegraphics[width=\textwidth]{figure/scene2/suggestion-v2.png}
     \caption{提案手法}
     \label{fig:scene2/suggestion}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.45\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{figure/scene2/enokida.png}
+    \includegraphics[width=\textwidth]{figure/scene2/enokida-v2.png}
     \caption{従来研究\cite{enokida}}
     \label{fig:scene2/enokida}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.45\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{figure/scene2/potential.png}
+    \includegraphics[width=\textwidth]{figure/scene2/potential-v2.png}
     \caption{センサベースのポテンシャル法}
     \label{fig:scene2/potential}
   \end{subfigure}
@@ -117,7 +117,7 @@
 \label{tab:scene2}
 \begin{tabular}{|l|c|c|}
 \hline
-手法 & 到達時間[step] & 経路長[m] \\
+手法 & 到達時間[s] & 経路長[m] \\
 \hline
 提案手法 & 106 & 12.72 \\
 \hline
@@ -134,36 +134,36 @@
 また，センサベースのポテンシャル法も障害物の進行方向前方へ進入しようとする挙動が見られる(図\ref{fig:scene2}(\subref{fig:scene2/potential}))．
 これにより回避中に大きく進路変更が生じ，非効率な軌道を形成する結果となった．
 一方，提案手法は本場面においても障害物の進行方向前方への不用意な進入を回避し，常にスムーズで効率的な回避軌道を生成している(図\ref{fig:scene2}(\subref{fig:scene2/suggestion}))．
-定量的な比較結果としては，提案手法は到達時間が106[step]，経路長が12.72[m]となり，従来研究\cite{enokida}と比較して到達時間が33[step]短縮され，経路長も3.96[m]短くなった．
-センサベースのポテンシャル法と比較しても，到達時間が9[step]，経路長が1.08[m]とそれぞれ改善されている．
-
+提案手法は到達時間106[s]，経路長12.72[m]で目的地に到着した．
+従来研究\cite{enokida}に対しては，到達時間33[s]，経路長3.96[m]と短縮されており，
+センサベースのポテンシャル法に対しても，到達時間が9[s]，経路長は1.08[m]の改善を示した．
 
 
 \subsubsection*{横方向の往復移動をする障害物の回避}
 図\ref{fig:scene3}に横方向の往復移動をする障害物の回避シミュレーション結果を示し，
 表\ref{tab:scene3}に各手法の到達時間と経路長の比較結果を示す．
-ここでは，障害物の初期速度は$(0.35, 0.00)$[m/step]，加速度は$(-0.01, 0.00)$[m/step$^2$]に設定した．
+ここでは，障害物の初期速度は$(0.35，0.00)$[m/s]，加速度は$(-0.01，0.00)$[m/s$^2$]に設定した．
 
 \begin{figure}[t]
   \centering
 
   \begin{subfigure}[b]{0.45\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{figure/scene3/suggestion.png}
+    \includegraphics[width=\textwidth]{figure/scene3/suggestion-v2.png}
     \caption{提案手法}
     \label{fig:scene3/suggestion}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.45\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{figure/scene3/enokida.png}
+    \includegraphics[width=\textwidth]{figure/scene3/enokida-v2.png}
     \caption{従来研究\cite{enokida}}
     \label{fig:scene3/enokida}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.45\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{figure/scene3/potential.png}
+    \includegraphics[width=\textwidth]{figure/scene3/potential-v2.png}
     \caption{センサベースのポテンシャル法}
     \label{fig:scene3/potential}
   \end{subfigure}
@@ -178,7 +178,7 @@
 \label{tab:scene3}
 \begin{tabular}{|l|c|c|}
 \hline
-手法 & 到達時間[step] & 経路長[m] \\
+手法 & 到達時間[s] & 経路長[m] \\
 \hline
 提案手法 & 110 & 13.20 \\
 \hline
@@ -194,8 +194,11 @@
 その後速度が減少して0となり最終的には負方向へと反転している．
 このような運動方向が変化する障害物に対しても，提案手法は安定して回避行動を行えることが確認できる(図\ref{fig:scene3}(\subref{fig:scene3/suggestion}))．
 これは加速度推定により動的障害物の将来の反転挙動を事前に予測できることが寄与していると考えられる．
-定量的な比較結果としては，提案手法は到達時間が110[step]，経路長が13.20[m]となり，従来研究\cite{enokida}と比較して到達時間が26[step]短縮され，経路長も3.12[m]短くなった．
-センサベースのポテンシャル法と比較しても，到達時間が11[step]，経路長が1.32[m]とそれぞれ改善されている．
+また，本場面において提案手法は，他手法と比較して顕著な改善を示した．
+従来研究\cite{enokida}に対しては，到達時間が26[s]，
+経路長は3.12[m]の短縮を実現している．
+さらに，センサベースのポテンシャル法と比較しても，
+到達時間が11[s]，経路長は1.32[m]短く，効率的な回避が行われていることがわかる．
 
 
 
@@ -206,7 +209,7 @@
 \subsubsection*{横方向に等加速で進行する障害物と静的障害物の回避}
 図\ref{fig:scene4}に横方向に移動する動的障害物と静的障害物の壁が存在する場面における回避シミュレーション結果を示し，
 表\ref{tab:scene4}に各手法の到達時間と経路長の比較結果を示す．
-ここでは，障害物の初期速度は$(0.035, 0.000)$[m/step]，加速度は$(0.004, 0.000)$[m/step$^2$]に設定した．
+ここでは，動的障害物の初期速度は$(0.035，0.000)$[m/s]，加速度は$(0.004，0.000)$[m/s$^2$]に設定した．
 
 
 
@@ -215,21 +218,21 @@
 
   \begin{subfigure}[b]{0.45\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{figure/scene4/suggestion.png}
+    \includegraphics[width=\textwidth]{figure/scene4/suggestion-v2.png}
     \caption{提案手法}
     \label{fig:scene4/suggestion}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.45\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{figure/scene4/enokida.png}
+    \includegraphics[width=\textwidth]{figure/scene4/enokida-v2.png}
     \caption{従来研究\cite{enokida}}
     \label{fig:scene4/enokida}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.85\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{figure/scene4/potential.png}
+    \includegraphics[width=\textwidth]{figure/scene4/potential-v2.png}
     \caption{センサベースのポテンシャル法}
     \label{fig:scene4/potential}
   \end{subfigure}
@@ -244,7 +247,7 @@
 \label{tab:scene4}
 \begin{tabular}{|l|c|c|}
 \hline
-手法 & 到達時間[step] & 経路長[m] \\
+手法 & 到達時間[s] & 経路長[m] \\
 \hline
 提案手法 & 145 & 17.40 \\
 \hline
@@ -256,20 +259,21 @@
 \end{table}
 
 
-図\ref{fig:scene4}(\subref{fig:scene4/potential})のセンサベースのポテンシャル法は静的障害物の影響により停留し到達不能となった．
+図\ref{fig:scene4}(\subref{fig:scene4/potential})のセンサベースのポテンシャル法は静的障害物である壁の影響により停留し到達不能となった．
 図\ref{fig:scene4}(\subref{fig:scene4/suggestion})の提案手法は動的障害物に対して加速度推定に基づく回避を行いながら，
-静的障害物に対しては従来研究\cite{hiraoka} の静的障害物回避手法へと適切に切り替え走行していることが確認できる．
-このことから，提案手法が動的および静的環境が混在する状況においても安定した回避行動を実現できることがわかる．
-定量的な比較結果としては，提案手法は到達時間が145[step]，経路長が17.40[m]となり，従来研究\cite{enokida}と比較して到達時間が26[step]短縮され，経路長も3.12[m]短くなった．
-
-
+静的障害物の壁に対しては従来研究\cite{hiraoka}の「壁沿い走行」へと適切に切り替え走行していることが確認できる．
+さらに，表\ref{tab:scene4}に示す数値比較より，
+提案手法は到達時間が145[s]，経路長は17.40[m]で目的地に到達しており，
+従来研究\cite{enokida}に対して到達時間が26[s]，経路長は3.12[m]短縮されている．
+この結果は，加速度を有する動的障害物と静的障害物の壁が同時に存在する環境においても，
+提案手法が効率的な経路生成を実現できることを示している．
 
 
 
 \subsubsection*{横方向に等速で進行する障害物の回避}
 図\ref{fig:scene5}に横方向に等速で進行する障害物の回避シミュレーション結果を示し，
 表\ref{tab:scene5}に各手法の到達時間と経路長の比較結果を示す．
-ここでは，障害物の初期速度は$(0.035, 0.000)$[m/step]，加速度は$(0, 0)$[m/step$^2$]であり，等速運動を行う．
+ここでは，障害物の初期速度は$(0.035，0.000)$[m/s]，加速度は$(0，0)$[m/s$^2$]であり，等速運動を行う．
 
 
 \begin{figure}[t]
@@ -277,21 +281,21 @@
 
   \begin{subfigure}[b]{0.45\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{figure/scene5/suggestion.png}
+    \includegraphics[width=\textwidth]{figure/scene5/suggestion-v2.png}
     \caption{提案手法}
     \label{fig:scene5/suggestion}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.45\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{figure/scene5/enokida.png}
+    \includegraphics[width=\textwidth]{figure/scene5/enokida-v2.png}
     \caption{従来研究\cite{enokida}}
     \label{fig:scene5/enokida}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.45\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{figure/scene5/potential.png}
+    \includegraphics[width=\textwidth]{figure/scene5/potential-v2.png}
     \caption{センサベースのポテンシャル法}
     \label{fig:scene5/potential}
   \end{subfigure}
@@ -306,7 +310,7 @@
 \label{tab:scene5}
 \begin{tabular}{|l|c|c|}
 \hline
-手法 & 到達時間[step] & 経路長[m] \\
+手法 & 到達時間[s] & 経路長[m] \\
 \hline
 提案手法 & 122 & 14.64 \\
 \hline
@@ -318,10 +322,9 @@
 \end{table}
 
 
-図\ref{fig:scene5}(\subref{fig:scene5/suggestion})の提案手法では等速運動のような単純な動的環境においても有効に機能することがわかる．
+図\ref{fig:scene5}(\subref{fig:scene5/suggestion})の提案手法では等速運動のような単純な動的環境においても有効に機能している．
 このことから，加速度推定機能は加速度の有無に関わらず障害物の将来位置予測を安定化させ，効率的な回避軌道を生成できていることが確認できる．
-定量的な比較結果としては，提案手法は到達時間が122[step]，経路長が14.64[m]となり，従来研究\cite{enokida}と比較して到達時間が11[step]短縮され，経路長も1.32[m]短くなった．
-センサベースのポテンシャル法と比較しても，到達時間が37[step]，経路長が4.44[m]とそれぞれ改善されている．
+また，表\ref{tab:scene5}の結果から提案手法は他の手法と比較して最も短い到達時間と経路長を実現できていることがわかる．
 
 % \subsection{考察}
 % 5つの場面におけるシミュレーション結果から，提案手法は全ての場面において，従来研究\cite{enokida}およびセンサベースのポテンシャル法と比較して，より短い到達時間と経路長を実現できた．
@@ -332,5 +335,5 @@
 % さらに，提案手法では動的障害物に対して加速度推定に基づく回避を行いながら，静的障害物に対しては従来研究\cite{hiraoka} の静的障害物回避手法へと適切に切り替えながら走行していることが確認できる．
 % このことから，提案手法が動的および静的環境が混在する状況においても安定した回避行動を実現できることを示している．
 % 図\ref{fig:scene5} では加速度を持たない等速で移動する障害物を対象としている．提案手法は他の手法より短い到達時間と経路長を達成した．
-% 加速度を持たない障害物に対しても性能が向上していることから，等速で移動する障害物に対しても適切な回避行動を行い有効な手法であると言える．
+% 加速度を持たない障害物に対しても性能が向上していることから，等速で移動する障害物に対しても適切な回避行動を行い有効な手法であるといえる．
 % 以上の結果より，提案手法は加速度を持つ障害物に対する性能向上だけでなく，等速で移動する障害物に対しても効率的な回避を実現できた．

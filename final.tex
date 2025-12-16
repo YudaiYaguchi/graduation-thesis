@@ -47,6 +47,7 @@
 \usepackage{subcaption}
 \usepackage{textcomp}
 \usepackage{here}
+\usepackage[dvipdfmx]{graphicx}
 
 
 \makeatletter
@@ -125,7 +126,10 @@
 	
 	\thispagestyle{empty}		% タイトルページにページ番号を振らないようにするため
     \newpage
-	\input{abstract.tex}
+		\input{abstract.tex}
+		% \begin{center}
+		%   \includegraphics[width=\paperwidth,height=\paperheight]{abstract.pdf}
+		% \end{center}
 	\thispagestyle{empty}
    
 	
