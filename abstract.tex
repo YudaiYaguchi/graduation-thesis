@@ -1,30 +1,27 @@
 \begin{abstract}
-  本研究は，自動走行ロボットの社会実装に向けて重要となる，動的障害物を考慮した安全かつ効率的な経路生成手法の確立を目的とする。
-  近年，物流分野を中心に自動配送ロボットの実用化が進められており，人手不足の緩和や労働環境の改善が期待されている。
-  しかし，未知環境や動的障害物が存在する実環境においては，ロボットが障害物の挙動を適切に予測しながら移動する必要があり，
-  高い安全性とリアルタイム性を両立した経路生成が求められる。
+  近年，物流分野を中心に自動配送ロボットの実用化が進められており，人手不足の緩和や労働環境の改善が期待されている．未知環境や静的障害物・動的障害物が混在する実環境においては，ロボットが障害物の挙動を適切に予測しながら移動する必要があり，高い安全性とリアルタイム性を両立した経路生成が求められる．
+  移動ロボットの経路生成には，大局的経路計画，ニューラルネットワーク，時空間RRT，ポテンシャル法などが用いられてきた．このうちポテンシャル法は計算量が少なくリアルタイム処理に優れる一方で，障害物と目的地の影響が釣り合うことで移動不能に陥る停留問題を有する．これに対し，壁沿い走行や回り込み走行を組み合わせることで停留問題を解決する手法が提案されてきた．また動的障害物に対しては，障害物の速度推定を用いた回避手法があるが，速度情報のみでは加速や減速を伴う運動に対応できず，将来位置の予測誤差により経路が冗長になるという課題が残されている．
+  本論文では，従来のポテンシャル法を基盤とし，障害物の位置変化から速度および加速度を推定する機能を新たに組み込んだ動的障害物回避手法を提案する．提案手法では，障害物の将来位置を複数秒先まで予測し，それらを斥力ポテンシャル場に反映させることで，障害物の進行経路への侵入を回避しつつ，安全かつ効率的な経路生成を実現する．さらに，従来手法および通常のポテンシャル法との比較を通じて，到達時間および経路長の観点から提案手法の有効性を検証する．
+  % 本研究は，自動走行ロボットの社会実装に向けて重要となる，動的障害物を考慮した安全かつ効率的な経路生成手法の確立を目的とする．
+  % 近年，物流分野を中心に自動配送ロボットの実用化が進められており，人手不足の緩和や労働環境の改善が期待されている．
+  % しかし，未知環境や動的障害物が存在する実環境においては，ロボットが障害物の挙動を適切に予測しながら移動する必要があり，
+  % 高い安全性とリアルタイム性を両立した経路生成が求められる．
 
-  移動ロボットの経路生成には，大局的経路計画，ニューラルネットワーク，時空間RRT，ポテンシャル法などが用いられてきた。
-  ポテンシャル法は計算量が少なくリアルタイム処理に優れる一方で，障害物と目的地の影響が釣り合うことで移動不能に陥る停留問題を有する。
-  これに対し，仮ゴールの設定や壁沿い走行，回り込み走行を組み合わせることで停留問題を解決する手法が提案されてきた。
-  また，動的障害物に対しては，障害物の速度推定を用いた回避手法が報告されているが，
-  速度情報のみでは加速や減速を伴う運動を十分に表現できず，将来位置の予測誤差により経路が冗長化するという課題が残されている。
+  % 移動ロボットの経路生成には，大局的経路計画，ニューラルネットワーク，時空間RRT，ポテンシャル法などが用いられてきた．
+  % ポテンシャル法は計算量が少なくリアルタイム処理に優れる一方で，障害物と目的地の影響が釣り合うことで移動不能に陥る停留問題を有する．
+  % これに対し，仮ゴールの設定や壁沿い走行，回り込み走行を組み合わせることで停留問題を解決する手法が提案されてきた．
+  % また，動的障害物に対しては，障害物の速度推定を用いた回避手法が報告されているが，
+  % 速度情報のみでは加速や減速を伴う運動を十分に表現できず，将来位置の予測誤差により経路が冗長化するという課題が残されている．
   
-  そこで本研究では，従来のポテンシャル法を基盤とし，
-  障害物の位置変化から速度および加速度を推定する機能を新たに組み込んだ動的障害物回避手法を提案する。提案手法では，
-  障害物の将来位置を複数秒先まで予測し，それらを斥力ポテンシャル場に反映させることで，障害物の進行経路への侵入を回避しつつ，安全かつ効率的な経路生成を実現する。さらに，従来手法および通常のポテンシャル法との比較を通じて，到達時間および経路長の観点から提案手法の有効性を検証する。
+  % そこで本研究では，従来のポテンシャル法を基盤とし，
+  % 障害物の位置変化から速度および加速度を推定する機能を新たに組み込んだ動的障害物回避手法を提案する．提案手法では，
+  % 障害物の将来位置を複数秒先まで予測し，それらを斥力ポテンシャル場に反映させることで，障害物の進行経路への侵入を回避しつつ，安全かつ効率的な経路生成を実現する．
+  % さらに，従来手法および通常のポテンシャル法との比較を通じて，到達時間および経路長の観点から提案手法の有効性を検証する．
 
   \vspace{10pt} 
-  
-  In recent years, research on autonomous mobile robots has been actively conducted.
-  In particular, in the logistics industry, the development and legal reforms toward the practical use of autonomous delivery robots have been progressing, which are expected to help reduce the long working hours of truck drivers and alleviate labor shortages.
-  
-  For the social implementation of autonomous delivery robots, safe path generation in unknown environments is essential.
-  Although methods such as global path planning and neural networks have been proposed, global path planning tends to cause robots to approach obstacles too closely at corners, and neural networks require a large amount of training data and time.
-  Therefore, these methods are not suitable for real-time path generation in unknown environments.
-  On the other hand, the potential field method is a lightweight algorithm with low computational cost and excellent real-time performance.
-  
-  This study aims to construct a dynamic obstacle avoidance method based on the potential field approach incorporating acceleration estimation.
-  By introducing acceleration estimation, the robot can predict the future motion of obstacles more accurately, enabling smoother and safer path generation in dynamic environments.
-  Finally, the effectiveness of the proposed method is verified through simulation.
+  In recent years, the practical deployment of autonomous delivery robots has been actively advanced, particularly in the logistics domain, with expectations for alleviating labor shortages and improving working conditions. Thus, path planning that achieves both high safety and real-time performance is required in real-world environments with unknown, static, and dynamic obstacles.
+  Conventionally, a variety of path planning approaches for mobile robots have been investigated, including global path planning, neural network-based methods, spatiotemporal Rapidly-exploring Random Trees (RRT), and the Potential Field Method.
+  For dynamic obstacles, avoidance strategies based on obstacle velocity estimation have also been reported. However, approaches that rely solely on velocity information cannot adequately accommodate motions that involve acceleration or deceleration. As a result, prediction errors in the future positions of obstacles may arise, leading to redundant or inefficient paths.
+  This paper proposes a dynamic obstacle avoidance method founded on the conventional Potential Field Method, augmented with functionality to estimate both velocity and acceleration from observed changes in obstacle position. In the proposed approach, obstacle future positions are predicted several seconds ahead and incorporated into the repulsive potential field. By doing so, the method prevents intrusion into the anticipated trajectories of moving obstacles while enabling safe and efficient path generation. Furthermore, the effectiveness of the proposed method is validated through comparative evaluations against conventional velocity-based approaches and the standard Potential Field Method, using arrival time and path length as performance metrics.
 \end{abstract}
+

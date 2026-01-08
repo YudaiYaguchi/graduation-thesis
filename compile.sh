@@ -33,7 +33,7 @@ if [ "$#" -gt 0 ]; then
   PUNCT_FILES=("$@")
 else
   # デフォルトで句読点を直すファイルをここに列挙します。必要に応じて追加してください。
-  PUNCT_FILES=("final.tex" "reference.tex" "1.tex" "2.tex" "3.tex" "4.tex" "5.tex")
+  PUNCT_FILES=("final.tex" "reference.tex" "1.tex" "2.tex" "3.tex" "4.tex" "5.tex" "abstract.tex")
 fi
 
 total_period=0
